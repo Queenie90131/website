@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第二大脑 · 个人动态知识库搭建指南 Top3方案</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    --accent: #F59E0B;
+    --accent-light: #FFFBEB;
+    --success: #10B981;
+    --success-light: #ECFDF5;
+    --danger: #EF4444;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-300: #D1D5DB;
+    --gray-500: #6B7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.8; color: var(--gray-700); background: var(--gray-50);
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #EC4899 100%);
+    color: white; padding: 64px 0 48px; text-align: center;
+  }
+  .hero h1 { font-size: 2.4em; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
+  .hero .subtitle { font-size: 1.15em; opacity: 0.9; max-width: 640px; margin: 0 auto 24px; }
+  .hero .meta { font-size: 0.9em; opacity: 0.7; }
+
+  /* TOC */
+  .toc {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow-md);
+    padding: 32px; margin: -24px auto 40px; position: relative; z-index: 1;
+  }
+  .toc h2 { font-size: 1.3em; color: var(--gray-900); margin-bottom: 16px; }
+  .toc ol { padding-left: 24px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: var(--primary); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Section */
+  section { margin-bottom: 48px; }
+  section > h2 {
+    font-size: 1.6em; color: var(--gray-900); border-left: 4px solid var(--primary);
+    padding-left: 16px; margin-bottom: 24px;
+  }
+  section > h3 { font-size: 1.25em; color: var(--gray-900); margin: 28px 0 12px; }
+
+  /* Cards */
+  .card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 28px; margin-bottom: 24px; border: 1px solid var(--gray-200);
+  }
+  .card h3 { font-size: 1.2em; color: var(--primary); margin-bottom: 8px; }
+  .card h4 { font-size: 1.05em; color: var(--gray-900); margin: 20px 0 8px; }
+  .card p { margin-bottom: 10px; }
+  .card ul, .card ol { padding-left: 24px; margin-bottom: 12px; }
+  .card li { margin-bottom: 6px; }
+
+  /* Tags */
+  .tag {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 0.8em; font-weight: 600; margin-right: 6px; margin-bottom: 4px;
+  }
+  .tag-blue { background: var(--primary-light); color: var(--primary); }
+  .tag-amber { background: var(--accent-light); color: #92400E; }
+  .tag-green { background: var(--success-light); color: #065F46; }
+
+  /* Author Card */
+  .author-card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 20px; margin-bottom: 16px; border-left: 4px solid var(--primary);
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .author-card .avatar {
+    width: 56px; height: 56px; border-radius: 50%; background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center; font-size: 1.5em;
+    flex-shrink: 0; color: var(--primary);
+  }
+  .author-card .info { flex: 1; }
+  .author-card .name { font-weight: 700; color: var(--gray-900); font-size: 1.05em; }
+  .author-card .desc { color: var(--gray-500); font-size: 0.9em; margin: 4px 0 8px; }
+
+  /* Step */
+  .step {
+    display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-start;
+  }
+  .step-num {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1em; flex-shrink: 0;
+  }
+  .step-content { flex: 1; }
+  .step-content h4 { font-size: 1.05em; color: var(--gray-900); margin-bottom: 4px; }
+  .step-content p { margin-bottom: 8px; }
+
+  /* Comparison Table */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 0.92em; }
+  .compare-table th {
+    background: var(--primary); color: white; padding: 10px 14px;
+    text-align: left; font-weight: 600;
+  }
+  .compare-table td {
+    padding: 10px 14px; border-bottom: 1px solid var(--gray-200);
+  }
+  .compare-table tr:nth-child(even) td { background: var(--gray-50); }
+  .compare-table tr:hover td { background: var(--primary-light); }
+
+  /* Highlight Box */
+  .highlight-box {
+    background: var(--primary-light); border-radius: var(--radius);
+    padding: 20px 24px; margin: 20px 0; border-left: 4px solid var(--primary);
+  }
+  .highlight-box.amber {
+    background: var(--accent-light); border-left-color: var(--accent);
+  }
+  .highlight-box.green {
+    background: var(--success-light); border-left-color: var(--success);
+  }
+  .highlight-box strong { color: var(--gray-900); }
+
+  /* Workflow Diagram */
+  .workflow {
+    display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap; gap: 8px; margin: 20px 0; padding: 24px;
+    background: white; border-radius: var(--radius); border: 1px solid var(--gray-200);
+  }
+  .workflow .wf-box {
+    background: var(--primary-light); border: 2px solid var(--primary);
+    border-radius: 8px; padding: 10px 16px; text-align: center;
+    font-weight: 600; color: var(--primary); font-size: 0.9em; min-width: 100px;
+  }
+  .workflow .wf-arrow { color: var(--gray-300); font-size: 1.5em; font-weight: 700; }
+
+  /* Link */
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Glossary */
+  .glossary-term {
+    background: var(--accent-light); padding: 2px 8px; border-radius: 4px;
+    font-weight: 600; color: #92400E; cursor: help;
+    border-bottom: 1px dashed #92400E;
+  }
+  .glossary-box {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 20px 24px; margin-bottom: 12px; border-left: 3px solid var(--accent);
+  }
+  .glossary-box dt { font-weight: 700; color: var(--gray-900); margin-bottom: 2px; }
+  .glossary-box dd { color: var(--gray-500); margin-bottom: 12px; font-size: 0.95em; }
+  .glossary-box dd:last-child { margin-bottom: 0; }
+
+  /* Scenario tabs */
+  .scenario-tabs { display: flex; gap: 0; margin-bottom: 0; }
+  .scenario-tab {
+    padding: 12px 24px; cursor: pointer; font-weight: 600; font-size: 0.95em;
+    border: 1px solid var(--gray-200); border-bottom: none; border-radius: 8px 8px 0 0;
+    background: var(--gray-100); color: var(--gray-500); transition: all 0.2s;
+  }
+  .scenario-tab.active { background: white; color: var(--primary); border-color: var(--primary); border-bottom-color: white; }
+  .scenario-content {
+    border: 1px solid var(--primary); border-radius: 0 8px 8px 8px;
+    padding: 24px; background: white; display: none;
+  }
+  .scenario-content.active { display: block; }
+
+  /* Footer */
+  footer {
+    background: var(--gray-900); color: var(--gray-300); padding: 40px 0;
+    text-align: center; margin-top: 60px; font-size: 0.9em;
+  }
+  footer a { color: var(--accent); }
+
+  /* Print */
+  @media print {
+    .hero { background: #4F46E5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card, .author-card { break-inside: avoid; }
+    body { font-size: 10pt; }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.6em; }
+    .author-card { flex-direction: column; }
+    .step { flex-direction: column; }
+    .workflow { flex-direction: column; }
+    .scenario-tabs { flex-direction: column; }
+    .scenario-tab { border-radius: 8px; border-bottom: 1px solid var(--gray-200); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<header class="hero">
+  <div class="container">
+    <h1>打造你的第二大脑</h1>
+    <p class="subtitle">个人动态知识库搭建 Top 3 方案 · 保姆级 0→1 完整指南</p>
+    <p class="meta">基于小红书 & B站头部知识管理博主最新内容整理 · 2026年4月</p>
+  </div>
+</header>
+
+<!-- ==================== TOC ==================== -->
+<div class="container">
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#glossary">术语表：先搞懂这些词</a></li>
+    <li><a href="#overview">三大方案速览对比</a></li>
+    <li><a href="#sources">方案来源与推荐博主</a></li>
+    <li><a href="#plan1">方案一：Notion + Cubox 全能知识中枢</a></li>
+    <li><a href="#plan2">方案二：Obsidian + 简悦 本地知识花园</a></li>
+    <li><a href="#plan3">方案三：flomo + Notion + n8n 自动化知识工厂</a></li>
+    <li><a href="#personal-growth">应用场景：个人成长知识库</a></li>
+    <li><a href="#work">应用场景：工作知识库</a></li>
+    <li><a href="#tools">工具与平台速查表</a></li>
+    <li><a href="#refs">参考资料与原文链接</a></li>
+  </ol>
+</nav>
+
+<!-- ==================== 术语表 ==================== -->
+<section id="glossary">
+  <h2>一、术语表：先搞懂这些词</h2>
+  <p style="margin-bottom:16px;">在开始之前，先快速认识一下文中会反复出现的概念和工具，全部用最通俗的话解释：</p>
+
+  <div class="glossary-box">
+    <dl>
+      <dt>第二大脑 (Second Brain)</dt>
+      <dd>由美国效率专家 Tiago Forte 提出的概念。简单说就是：用数字工具在你的大脑之外，再建一个"备用大脑"，专门帮你记住、整理、提取知识。你的大脑负责思考，第二大脑负责记忆。</dd>
+
+      <dt>PKM (Personal Knowledge Management，个人知识管理)</dt>
+      <dd>一种系统化管理个人知识的方法。包括怎么收集信息、怎么整理、怎么提取使用。简单理解就是"让学到的东西不浪费"的技术。</dd>
+
+      <dt>PARA 方法</dt>
+      <dd>一种把所有信息分成四个大类的整理方法：<strong>P</strong>rojects（项目，正在做的事）、<strong>A</strong>reas（领域，需要长期关注的方面）、<strong>R</strong>esources（资源，以后可能用到的资料）、<strong>A</strong>rchives（归档，暂时不用的东西）。就像把衣柜分成"这季穿的""全年需要的""收藏款""过季暂存"。</dd>
+
+      <dt>CODE 工作流</dt>
+      <dd>知识处理的四步流程：<strong>C</strong>apture（捕获，把看到的好内容存下来）→ <strong>O</strong>rganize（整理，分门别类放好）→ <strong>D</strong>istill（提炼，把长文变短、抓重点）→ <strong>E</strong>xpress（表达，写成自己的文章或笔记分享出去）。</dd>
+
+      <dt>卡片盒笔记法 (Zettelkasten)</dt>
+      <dd>德国社会学家卢曼发明的笔记方法。核心思想：每张卡片只写一个想法，然后用"链接"把相关的卡片串起来，久而久之就形成一张知识网。像蜘蛛织网一样，越织越大、越织越密。</dd>
+
+      <dt>双向链接</dt>
+      <dd>传统链接是单向的（A指向B），双向链接意味着A指向B的同时，B也会自动显示"有A链接到了我"。这样你在任何一张笔记上都能看到所有相关笔记，方便发现知识之间的关联。</dd>
+
+      <dt>Notion</dt>
+      <dd>一个在线的"万能工作台"软件，可以做笔记、建数据库、做项目管理，界面类似搭积木一样灵活。数据存在云端（就是存在网上），手机和电脑都能随时访问。官网：<a href="https://www.notion.so" target="_blank">notion.so</a></dd>
+
+      <dt>Obsidian（黑曜石）</dt>
+      <dd>一个"本地优先"的笔记软件，所有文件存在你自己的电脑上（不上传到任何服务器），支持双向链接，有大量免费插件可以扩展功能。适合重视隐私和数据控制权的用户。官网：<a href="https://obsidian.md" target="_blank">obsidian.md</a></dd>
+
+      <dt>flomo（浮墨笔记）</dt>
+      <dd>一个极简的中文卡片笔记工具，主打"随手记一句话"。就像发微信朋友圈一样简单，但信息会被标签管理起来。特别适合记录碎片化的灵感和想法。官网：<a href="https://flomoapp.com" target="_blank">flomoapp.com</a></dd>
+
+      <dt>Cubox</dt>
+      <dd>一个"稍后阅读"和"网页收藏"工具。你在小红书、微信、微博等任何平台看到好内容，一键就能存到 Cubox 里，之后慢慢看、慢慢整理。支持 AI 自动摘要（就是AI帮你把长文总结成短的）。官网：<a href="https://cubox.pro" target="_blank">cubox.pro</a></dd>
+
+      <dt>简悦 (SimpRead)</dt>
+      <dd>一个浏览器插件，能把网页上的文章变成干净的阅读界面（去掉广告和乱七八糟的内容），还能一键把文章保存到 Notion、Obsidian 等各种笔记工具里。支持 391+ 个网站。官网：<a href="https://simpread.pro" target="_blank">simpread.pro</a></dd>
+
+      <dt>n8n（读作"n-eight-n"）</dt>
+      <dd>一个开源免费的"自动化连接器"。你可以设置规则，比如"每天早上8点自动从某个公众号抓取新文章，用AI总结后存到我的 Notion 里"。像搭积木一样把不同软件串起来自动干活。官网：<a href="https://n8n.io" target="_blank">n8n.io</a></dd>
+
+      <dt>API（应用程序接口）</dt>
+      <dd>简单理解就是"软件之间说话的方式"。比如你让AI帮你分类文章，就需要通过API告诉AI"这是一篇文章，请帮我分类"，AI处理完再通过API把结果告诉你。</dd>
+
+      <dt>RSS（简易信息聚合）</dt>
+      <dd>一种内容订阅技术。设置好之后，你关注的网站一发布新文章，内容就会自动推送到你的阅读器里，不用一个个网站去刷。像报纸订阅一样，信息自动送上门。</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- ==================== 速览对比 ==================== -->
+<section id="overview">
+  <h2>二、三大方案速览对比</h2>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width:15%">对比维度</th>
+        <th style="width:28%">方案一：Notion 全能中枢</th>
+        <th style="width:28%">方案二：Obsidian 本地花园</th>
+        <th style="width:29%">方案三：flomo+Notion+n8n 自动化工厂</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>核心工具</strong></td>
+        <td>Notion + Cubox + Notion AI</td>
+        <td>Obsidian + 简悦/Cubox + AI插件</td>
+        <td>flomo + Notion + n8n + WeWe RSS</td>
+      </tr>
+      <tr>
+        <td><strong>方法论</strong></td>
+        <td>PARA + CODE 工作流</td>
+        <td>卡片盒笔记法 + PARA</td>
+        <td>CODE + 卡片笔记 + 自动化</td>
+      </tr>
+      <tr>
+        <td><strong>上手难度</strong></td>
+        <td>⭐⭐ 简单</td>
+        <td>⭐⭐⭐⭐ 偏难</td>
+        <td>⭐⭐⭐ 中等</td>
+      </tr>
+      <tr>
+        <td><strong>自动化程度</strong></td>
+        <td>⭐⭐⭐ 中等（依赖Notion AI）</td>
+        <td>⭐⭐⭐⭐ 较高（插件生态丰富）</td>
+        <td>⭐⭐⭐⭐⭐ 最高（全流程自动化）</td>
+      </tr>
+      <tr>
+        <td><strong>多平台采集</strong></td>
+        <td>Cubox 一键采集 10+ 平台</td>
+        <td>简悦 391+ 站点 + 专用插件</td>
+        <td>n8n + RSS 自动化全覆盖</td>
+      </tr>
+      <tr>
+        <td><strong>数据存储</strong></td>
+        <td>云端（Notion 服务器）</td>
+        <td>本地（你自己的电脑）</td>
+        <td>混合（flomo云端 + Notion云端）</td>
+      </tr>
+      <tr>
+        <td><strong>年费用</strong></td>
+        <td>约 200-400 元/年</td>
+        <td>约 0-200 元/年</td>
+        <td>约 200-500 元/年</td>
+      </tr>
+      <tr>
+        <td><strong>适合人群</strong></td>
+        <td>非技术用户、内容创作者</td>
+        <td>技术爱好者、重视隐私</td>
+        <td>追求效率极致者</td>
+      </tr>
+      <tr>
+        <td><strong>代表博主</strong></td>
+        <td>二一的笔记、RAY、姜饼资</td>
+        <td>Johnny学、Shiki实验室</td>
+        <td>秦细细、Xuan_酱</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ==================== 方案来源与推荐博主 ==================== -->
+<section id="sources">
+  <h2>三、方案来源与推荐博主</h2>
+  <p style="margin-bottom:20px;">以下是小红书和B站上知识管理领域最具影响力的博主，他们的内容是本指南的核心来源：</p>
+
+  <h3>B站（Bilibili）头部博主</h3>
+
+  <div class="author-card">
+    <div class="avatar">📓</div>
+    <div class="info">
+      <div class="name">二一的笔记</div>
+      <div class="desc">B站笔记软件领域最知名UP主 · 测评 73+ 款笔记软件 · Notion 模板帮助 700+ 用户搭建知识系统</div>
+      <span class="tag tag-blue">Notion</span>
+      <span class="tag tag-blue">Heptabase</span>
+      <span class="tag tag-amber">PARA方法</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>经典视频：</strong><br>
+        · <a href="https://www.bilibili.com/video/BV18qyrB5EEH/" target="_blank">40分钟沉浸式拆解：个人知识体系搭建与 Notion 工作流管理</a><br>
+        · <a href="https://www.bilibili.com/video/BV1od6dBXEY2/" target="_blank">Notion 2026 最强入门教程！5个步骤速通个人知识库搭建（5.8万播放）</a><br>
+        · <a href="https://www.bilibili.com/video/BV1zf421B7pb/" target="_blank">爆肝2个月，最强白板笔记 Heptabase 硬核测评（8.0万播放）</a><br>
+        · 个人网站：<a href="https://eryinote.com" target="_blank">eryinote.com</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="author-card">
+    <div class="avatar">🎓</div>
+    <div class="info">
+      <div class="name">Johnny学</div>
+      <div class="desc">B站最资深 Obsidian 教程创作者 · 发起 #Obsidian可以做什么 话题（132.6万浏览）· 管理 18000+ 条笔记</div>
+      <span class="tag tag-blue">Obsidian</span>
+      <span class="tag tag-amber">卡片盒笔记法</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>经典视频：</strong><br>
+        · <a href="https://www.bilibili.com/video/BV1i3411k7TQ/" target="_blank">公开课第一集：将近3小时的 Obsidian 小白入门课</a><br>
+        · <a href="https://www.bilibili.com/video/BV1844y1Y7wt/" target="_blank">用Obsidian管理18000条笔记是什么体验</a><br>
+        · B站主页：<a href="https://space.bilibili.com/432408734/" target="_blank">space.bilibili.com/432408734</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="author-card">
+    <div class="avatar">🔬</div>
+    <div class="info">
+      <div class="name">Shiki实验室</div>
+      <div class="desc">Obsidian + AI 知识管理方向先驱 · 出版《上头Obsidian》一书 · 抖音5.7万粉丝</div>
+      <span class="tag tag-blue">Obsidian</span>
+      <span class="tag tag-green">AI融合</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>经典视频：</strong><br>
+        · <a href="https://www.bilibili.com/video/BV1hPp8zrEuz/" target="_blank">新人搞定 Obsidian+AI？实战手册来了</a><br>
+        · <a href="https://www.bilibili.com/video/BV1Tu411F79L/" target="_blank">Obsidian一键收藏网页，打造第二大脑全流程</a><br>
+        · B站主页：<a href="https://space.bilibili.com/301388587/" target="_blank">space.bilibili.com/301388587</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="author-card">
+    <div class="avatar">🤖</div>
+    <div class="info">
+      <div class="name">Xuan_酱</div>
+      <div class="desc">面向普通人的 AI 知识库教程 · 抖音43.4万粉丝 · B站代表作38.9万播放</div>
+      <span class="tag tag-blue">Obsidian</span>
+      <span class="tag tag-green">DeepSeek</span>
+      <span class="tag tag-green">本地AI</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>经典视频：</strong><br>
+        · <a href="https://www.bilibili.com/video/BV1XBxse5EcP/" target="_blank">最适合普通人的本地AI知识库！彻底颠覆办公/创作工作流（38.9万播放）</a><br>
+        · B站主页：<a href="https://space.bilibili.com/14848367/" target="_blank">space.bilibili.com/14848367</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="author-card">
+    <div class="avatar">🍪</div>
+    <div class="info">
+      <div class="name">姜饼资</div>
+      <div class="desc">台湾 Notion 系统化教学创作者 · 从新手到进阶完整教程体系</div>
+      <span class="tag tag-blue">Notion</span>
+      <span class="tag tag-amber">PARA+卡片盒</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>经典视频：</strong><br>
+        · <a href="https://www.bilibili.com/video/BV1d54y1T7GE/" target="_blank">Notion新手教学：利用数据库功能整理规划学习（2小时36分钟）</a><br>
+        · <a href="https://www.bilibili.com/video/BV1YadUYrEU7/" target="_blank">如何打造高效 Notion 工作系统？（手把手教学）</a>
+      </p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:32px;">小红书（Xiaohongshu）头部博主</h3>
+
+  <div class="author-card">
+    <div class="avatar">🌟</div>
+    <div class="info">
+      <div class="name">人生管理指南-RAY</div>
+      <div class="desc">小红书约4万粉丝 · Notion 官方推荐模板创作者 · 带领 3000+ 人学会 Notion · 出版《Notion人生系统》</div>
+      <span class="tag tag-blue">Notion</span>
+      <span class="tag tag-amber">人生系统</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>代表内容：</strong><br>
+        · <a href="https://www.bilibili.com/video/BV1ws421A7WQ/" target="_blank">用 Notion AI 打造小红书 AI 知识库</a><br>
+        · <a href="https://www.notion.com/zh-cn/templates/personal-wiki" target="_blank">Notion 官方模板：Personal Wiki</a><br>
+        · 著书：《Notion人生系统：用系统化思维设计理想生活》
+      </p>
+    </div>
+  </div>
+
+  <div class="author-card">
+    <div class="avatar">✨</div>
+    <div class="info">
+      <div class="name">秦细细</div>
+      <div class="desc">96年大专生转型自由职业者 · 月入3万+ · 主打知识管理+自媒体变现</div>
+      <span class="tag tag-blue">flomo</span>
+      <span class="tag tag-blue">Notion</span>
+      <span class="tag tag-amber">变现实战</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>代表内容：</strong><br>
+        · 大专生月入3w+，公开我的个人知识体系模板<br>
+        · 21天小红书IP养成计划（付费课程）<br>
+        · 方法论：flomo 写卡片笔记 + Notion 复盘与整理<br>
+        <span style="color:#6B7280;font-size:0.85em;">小红书搜索"秦细细"可找到其主页</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="author-card">
+    <div class="avatar">🧠</div>
+    <div class="info">
+      <div class="name">小胡的第二大脑</div>
+      <div class="desc">Notion 模板达人 · 已发布 35 个模板 · 专注第二大脑系统搭建</div>
+      <span class="tag tag-blue">Notion</span>
+      <span class="tag tag-amber">模板设计</span>
+      <p style="margin-top:8px;font-size:0.9em;">
+        <strong>代表内容：</strong><br>
+        · <a href="https://www.notion.com/en-gb/templates/xiaohu-v2" target="_blank">小胡的第二大脑 v2 模板</a><br>
+        · <a href="https://www.notion.com/@hubrainai" target="_blank">Notion 主页：35个模板合集</a><br>
+        · 热门模板：自媒体运营全能助手、小红书内容管理系统
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 方案一 ==================== -->
+<section id="plan1">
+  <h2>四、方案一：Notion + Cubox 全能知识中枢</h2>
+
+  <div class="highlight-box">
+    <strong>一句话总结：</strong>用 Cubox 从各平台一键收集内容，用 Notion 的数据库和 AI 能力统一整理、关联和输出。最适合非技术用户，上手快、界面美观、手机电脑无缝切换。
+  </div>
+
+  <h3>核心理念与方法论</h3>
+  <div class="card">
+    <p>本方案核心采用 Tiago Forte 的 <strong>PARA + CODE 方法论</strong>，由 B 站博主"二一的笔记"和小红书博主"RAY"大力推广。</p>
+    <p>简单说就是：先用 CODE 的四步流程处理每一条信息（捕获→整理→提炼→表达），然后用 PARA 的四个类别来归档（项目→领域→资源→归档）。</p>
+  </div>
+
+  <h3>所需工具清单</h3>
+  <table class="compare-table">
+    <thead><tr><th>工具名称</th><th>用途</th><th>费用</th><th>获取方式</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Notion</strong></td><td>知识库主体、整理和输出</td><td>免费版够用/Plus版 $10/月</td><td><a href="https://www.notion.so" target="_blank">notion.so</a> 注册账号</td></tr>
+      <tr><td><strong>Cubox</strong></td><td>多平台内容采集</td><td>免费版200条/Pro版 98元/年</td><td><a href="https://cubox.pro" target="_blank">cubox.pro</a></td></tr>
+      <tr><td><strong>Save to Notion</strong></td><td>浏览器一键保存到Notion</td><td>免费</td><td>Chrome 应用商店搜索安装</td></tr>
+      <tr><td><strong>Notion AI</strong></td><td>自动总结、分类、问答</td><td>Notion Plus 方案自带</td><td>Notion 内开启</td></tr>
+    </tbody>
+  </table>
+
+  <h3>保姆级 0→1 搭建步骤</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>注册 Notion 并熟悉界面（约 10 分钟）</h4>
+      <p>打开 <a href="https://www.notion.so" target="_blank">notion.so</a>，用邮箱注册账号。Notion 像一个在线笔记本，左侧是"文件夹目录"，右侧是"笔记编辑区"。你在里面写字就像写 Word 文档一样简单。</p>
+      <p><strong>小贴士：</strong>先花 5 分钟随便点点，熟悉"创建新页面"和"打字输入"这两个最基本的操作。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>搭建 PARA 四大分区（约 15 分钟）</h4>
+      <p>在 Notion 左侧目录里创建四个"页面"（就像建四个文件夹），分别命名为：</p>
+      <div class="highlight-box">
+        <strong>📁 Projects（项目）</strong> → 放正在做的事，比如"准备下周的汇报"<br>
+        <strong>📁 Areas（领域）</strong> → 放需要长期关注的方向，比如"健康管理""投资理财"<br>
+        <strong>📁 Resources（资源）</strong> → 放可能有用的参考资料，比如"好看的设计""学习笔记"<br>
+        <strong>📁 Archives（归档）</strong> → 放已经完成或暂时不用的内容
+      </div>
+      <p><strong>操作：</strong>在 Notion 左侧栏底部点击"+ New page"（新建页面），输入名称即可。重复四次，建好四个分区。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>创建核心数据库（约 20 分钟）</h4>
+      <p>"数据库"是 Notion 最强大的功能——你可以理解为"一个超级表格"，每一行是一条笔记，每一列是这条笔记的属性（比如分类、来源、日期等）。</p>
+      <p><strong>操作步骤：</strong></p>
+      <p>① 在"Resources（资源）"页面里，输入 <code>/database</code> 然后选择"Database - Full page"（全页数据库）<br>
+      ② 给数据库命名为"📚 知识库"<br>
+      ③ 添加以下列（属性）：</p>
+      <table class="compare-table">
+        <thead><tr><th>列名</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>标题</td><td>Title（标题）</td><td>知识条目的名称</td></tr>
+          <tr><td>分类</td><td>Select（单选）</td><td>如：职场技能、投资理财、健康管理、技术学习</td></tr>
+          <tr><td>来源平台</td><td>Select（单选）</td><td>如：小红书、微信公众号、微博、抖音、36氪</td></tr>
+          <tr><td>来源链接</td><td>URL（链接）</td><td>原文的网页地址</td></tr>
+          <tr><td>知识要点</td><td>Text（文本）</td><td>用自己的话总结的核心内容</td></tr>
+          <tr><td>标签</td><td>Multi-select（多选）</td><td>关键词标签，如：沟通技巧、时间管理</td></tr>
+          <tr><td>关联笔记</td><td>Relation（关联）</td><td>连接到其他相关的知识条目</td></tr>
+          <tr><td>收集日期</td><td>Date（日期）</td><td>什么时候收集的</td></tr>
+          <tr><td>状态</td><td>Select（单选）</td><td>未读 / 已读 / 已提炼 / 已输出</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>安装 Cubox 并设置多平台采集（约 15 分钟）</h4>
+      <p><strong>Cubox 是什么？</strong>一个帮你"一键收藏"网上内容的工具。你在任何平台看到好文章，点一下就能存到 Cubox 里。</p>
+      <p><strong>操作步骤：</strong></p>
+      <p>① 打开 <a href="https://cubox.pro" target="_blank">cubox.pro</a>，注册账号<br>
+      ② <strong>安装浏览器插件：</strong>在 Chrome 浏览器的应用商店搜索"Cubox"，安装。之后浏览任何网页时，点击 Cubox 图标就能一键收藏<br>
+      ③ <strong>添加微信助手：</strong>在 Cubox App 里找到"微信转发助手"，关注后把微信文章直接转发给它就能收藏<br>
+      ④ <strong>手机分享：</strong>在小红书/微博/抖音里，点"分享"→选"Cubox"，即可收藏</p>
+      <div class="highlight-box amber">
+        <strong>各平台采集方式一览：</strong><br>
+        · <strong>小红书：</strong>手机打开笔记 → 点分享 → 选择 Cubox<br>
+        · <strong>微信公众号：</strong>在文章页面点"…" → 转发给 Cubox 微信助手<br>
+        · <strong>微博：</strong>手机点分享 → 选择 Cubox<br>
+        · <strong>抖音：</strong>点分享 → 复制链接 → 打开 Cubox 自动识别<br>
+        · <strong>36氪/网页：</strong>浏览器点击 Cubox 插件图标一键收藏
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <h4>将 Cubox 内容导入 Notion 并整理（日常操作）</h4>
+      <p>每周花 30 分钟，打开 Cubox，把本周收藏的内容进行阅读和整理：</p>
+      <p>① 在 Cubox 里阅读收藏的文章，用 AI 摘要功能快速了解内容<br>
+      ② 值得深度整理的内容，手动复制到 Notion 的"📚 知识库"数据库中<br>
+      ③ 填写分类、标签、知识要点等属性<br>
+      ④ 如果这条知识和之前的某条相关，用"关联笔记"列把它们连起来</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-content">
+      <h4>开启 Notion AI 自动辅助（约 5 分钟）</h4>
+      <p><strong>Notion AI 能做什么？</strong>帮你自动总结长文章、根据内容建议分类和标签、回答关于你知识库内容的问题。</p>
+      <p>① 在 Notion 中任意页面按空格键输入 <code>/AI</code> 可以召唤 AI 助手<br>
+      ② 选择"总结"可以让 AI 帮你把长文章压缩成几句话<br>
+      ③ Notion AI Agent（智能体）功能可以在你的整个知识库中搜索和回答问题，像一个了解你所有笔记的私人助理</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-content">
+      <h4>建立知识关联与逻辑树（持续进行）</h4>
+      <p>知识如果只是堆在那里，跟没有差不多。关键在于建立知识之间的"连接"。</p>
+      <p>① <strong>用"关联"属性连接相关知识：</strong>比如你有一条关于"时间管理"的笔记，又有一条关于"提高专注力"的笔记，把它们关联起来<br>
+      ② <strong>创建"知识地图"页面：</strong>新建一个页面，用大纲的形式画出不同知识之间的逻辑关系，比如"个人成长 → 能力提升 → 时间管理 → 番茄工作法"<br>
+      ③ <strong>善用 Notion 的双向链接：</strong>在笔记里输入 <code>@</code> + 另一条笔记的标题，就能创建链接</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">8</div>
+    <div class="step-content">
+      <h4>设置定期回顾与知识输出（每周/每月）</h4>
+      <p>① <strong>每周回顾（30分钟）：</strong>打开知识库，筛选"状态=已读"的条目，用 Notion AI 帮你总结本周新增的知识点，写一段"本周知识小结"<br>
+      ② <strong>每月知识文档（1小时）：</strong>按分类筛选知识条目，让 Notion AI 根据同一分类下的所有笔记生成一份"知识总结文档"，导出为 PDF 供学习<br>
+      ③ <strong>知识输出：</strong>把你的理解写成小红书笔记或公众号文章发出去，"教别人"是最好的学习方式</p>
+    </div>
+  </div>
+
+  <div class="workflow">
+    <div class="wf-box">📱 各平台内容<br><small>小红书/微博/微信/抖音/36氪</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📥 Cubox 采集<br><small>一键收藏</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📝 Notion 整理<br><small>PARA分类+打标签</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">🤖 Notion AI<br><small>总结+分类+问答</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📄 知识文档<br><small>定期输出学习资料</small></div>
+  </div>
+</section>
+
+<!-- ==================== 方案二 ==================== -->
+<section id="plan2">
+  <h2>五、方案二：Obsidian + 简悦 本地知识花园</h2>
+
+  <div class="highlight-box green">
+    <strong>一句话总结：</strong>用简悦（或Cubox）从各平台剪藏内容，用 Obsidian 的双向链接和 AI 插件进行深度整理，形成一张不断生长的"知识网"。数据全部存在你自己电脑上，安全私密，可玩性极高。
+  </div>
+
+  <h3>核心理念与方法论</h3>
+  <div class="card">
+    <p>本方案核心采用<strong>卡片盒笔记法（Zettelkasten）+ PARA 框架</strong>，由 B 站博主"Johnny学"系统推广、"Shiki实验室"在 AI 方向深度拓展。</p>
+    <p>核心思想：每条笔记只记一个想法（"原子化笔记"），然后通过双向链接把相关想法串起来。久而久之，笔记之间自然形成一张"知识图谱"（可视化的知识网络），你能看到哪些知识彼此相关、哪些领域已经很丰富、哪些还有空白。</p>
+  </div>
+
+  <h3>所需工具清单</h3>
+  <table class="compare-table">
+    <thead><tr><th>工具名称</th><th>用途</th><th>费用</th><th>获取方式</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Obsidian</strong></td><td>知识库主体</td><td>个人免费</td><td><a href="https://obsidian.md" target="_blank">obsidian.md</a> 下载安装</td></tr>
+      <tr><td><strong>简悦 SimpRead</strong></td><td>网页内容采集</td><td>免费（高级版买断68元）</td><td><a href="https://simpread.pro" target="_blank">simpread.pro</a></td></tr>
+      <tr><td><strong>Cubox</strong>（可选替代简悦）</td><td>移动端内容采集</td><td>免费/Pro 98元/年</td><td><a href="https://cubox.pro" target="_blank">cubox.pro</a></td></tr>
+      <tr><td><strong>Aitags 插件</strong></td><td>AI 自动打标签和分类</td><td>免费（需 AI API 费用）</td><td>Obsidian 社区插件市场搜索</td></tr>
+      <tr><td><strong>Rednote2Obsidian 插件</strong></td><td>小红书收藏一键导入</td><td>免费</td><td>Obsidian 社区插件市场搜索</td></tr>
+      <tr><td><strong>DeepSeek API</strong>（可选）</td><td>AI 分类和总结</td><td>约0.1元/万字</td><td><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></td></tr>
+    </tbody>
+  </table>
+
+  <h3>保姆级 0→1 搭建步骤</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>安装 Obsidian 并创建"知识库"（约 5 分钟）</h4>
+      <p>打开 <a href="https://obsidian.md" target="_blank">obsidian.md</a>，下载适合你系统的版本并安装。打开后，点击"Create new vault"（创建新知识库），给它取个名字比如"我的第二大脑"，选择存放位置（比如电脑的"文档"文件夹里）。</p>
+      <p><strong>什么是 Vault？</strong>就是 Obsidian 的"笔记仓库"，本质上是你电脑上的一个文件夹，里面的每一篇笔记都是一个 .md 文件（一种纯文本文件格式）。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>搭建文件夹结构（约 10 分钟）</h4>
+      <p>在你的知识库里创建以下文件夹（在 Obsidian 左侧面板右键 → 新建文件夹）：</p>
+      <div class="highlight-box">
+        <strong>📁 00-Inbox（收件箱）</strong> → 所有新内容先放这里，等待整理<br>
+        <strong>📁 01-Projects（项目）</strong> → 正在进行的项目相关笔记<br>
+        <strong>📁 02-Areas（领域）</strong> → 长期关注的领域笔记<br>
+        <strong>📁 03-Resources（资源）</strong> → 参考资料、学习笔记<br>
+        <strong>📁 04-Archives（归档）</strong> → 完成的项目和过期内容<br>
+        <strong>📁 05-Templates（模板）</strong> → 存放笔记模板<br>
+        <strong>📁 06-Daily（日记）</strong> → 每日笔记
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>安装必备插件（约 15 分钟）</h4>
+      <p><strong>什么是插件？</strong>就像手机上的 App，给 Obsidian 添加新功能。</p>
+      <p><strong>安装方法：</strong>打开 Obsidian → 设置（左下角齿轮图标）→ 第三方插件 → 关闭"安全模式" → 浏览社区插件</p>
+      <table class="compare-table">
+        <thead><tr><th>插件名称</th><th>做什么用</th><th>一句话说明</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Templater</strong></td><td>笔记模板</td><td>一键生成统一格式的新笔记</td></tr>
+          <tr><td><strong>Dataview</strong></td><td>数据查询</td><td>像数据库一样查询和展示你的笔记</td></tr>
+          <tr><td><strong>Aitags</strong></td><td>AI 自动标签</td><td>AI 自动读懂笔记内容并打上标签</td></tr>
+          <tr><td><strong>Rednote2Obsidian</strong></td><td>小红书导入</td><td>把小红书收藏的笔记一键导入</td></tr>
+          <tr><td><strong>Obsidian Web Clipper</strong></td><td>网页剪藏</td><td>浏览器上一键把网页存为笔记</td></tr>
+          <tr><td><strong>Calendar</strong></td><td>日历视图</td><td>用日历看每天的笔记</td></tr>
+          <tr><td><strong>Graph View</strong>（内置）</td><td>知识图谱</td><td>用图形方式展示笔记之间的链接关系</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>配置内容采集渠道（约 20 分钟）</h4>
+      <p><strong>渠道1：小红书一键导入</strong></p>
+      <p>安装 Rednote2Obsidian 插件后，在插件设置里登录你的小红书账号。之后你在小红书里收藏的笔记、点赞的内容，都能一键同步到 Obsidian 的 Inbox 文件夹里，AI 还会自动帮你分类到对应的子文件夹。</p>
+      <p><strong>渠道2：浏览器网页（微博、36氪、公众号网页版等）</strong></p>
+      <p>安装 Obsidian Web Clipper 浏览器插件，或者安装简悦（SimpRead）。看到好文章时：</p>
+      <p>· <strong>简悦方式：</strong>点击简悦图标 → 进入阅读模式 → 点击"导出到 Obsidian" → 文章自动保存到 Inbox<br>
+      · <strong>Web Clipper 方式：</strong>点击浏览器上的 Obsidian 图标 → 选择模板 → 一键保存</p>
+      <p><strong>渠道3：微信公众号文章</strong></p>
+      <p>方法一：在微信中打开文章 → 复制链接 → 在电脑浏览器打开 → 用简悦或 Web Clipper 保存<br>
+      方法二：使用 Cubox 微信助手，先收藏到 Cubox，再批量导出到 Obsidian</p>
+      <p><strong>渠道4：抖音/其他平台</strong></p>
+      <p>在 App 内复制分享链接 → 打开电脑浏览器粘贴 → 用简悦保存到 Obsidian</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <h4>配置 AI 自动打标和分类（约 15 分钟）</h4>
+      <p><strong>什么是 AI 打标？</strong>就是让人工智能读懂你笔记的内容，自动给它加上合适的标签（比如"时间管理""投资""健康"等），不用你一条条手动分类。</p>
+      <p><strong>设置 Aitags 插件：</strong></p>
+      <p>① 在 Obsidian 设置 → Aitags 插件设置页面<br>
+      ② 填入你的 AI API Key（推荐使用 DeepSeek，费用很低）<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<strong>怎么获取 DeepSeek API Key？</strong>打开 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a>，注册账号，在"API Keys"页面创建一个，充值 10 元即可用很久<br>
+      ③ 设置你希望 AI 使用的标签列表（比如：时间管理、投资理财、健康管理、职场技能、人际沟通、技术学习等）<br>
+      ④ 开启"新笔记自动打标"功能</p>
+      <p>之后每次有新笔记进入 Inbox，Aitags 会自动读取内容，打上标签，甚至可以自动移到对应的文件夹里。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-content">
+      <h4>建立双向链接与知识图谱（日常操作）</h4>
+      <p>这是 Obsidian 最核心的功能，也是知识真正"活"起来的关键。</p>
+      <p><strong>操作方法：</strong>在写笔记时，提到另一个概念就用 <code>[[概念名]]</code> 包裹起来。比如你写"时间管理最重要的方法是[[番茄工作法]]"，这样两篇笔记就自动建立了链接。</p>
+      <p><strong>查看知识图谱：</strong>按 <code>Ctrl+G</code>（Mac 是 <code>Cmd+G</code>）打开"图谱视图"，你能看到所有笔记以圆点形式展示，有链接的笔记之间会有连线。知识越多，这张网越密，你能直观地看到知识之间的关系。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-content">
+      <h4>设置定期回顾与自动总结</h4>
+      <p>① <strong>使用 Dataview 插件创建"待回顾"视图：</strong>在一个笔记里写一段 Dataview 查询代码，自动列出最近一周新增的、还没有建立链接的"孤岛笔记"，提醒你去给它们建立连接<br>
+      ② <strong>每周知识整理：</strong>打开知识图谱，找到连接最密集的"知识簇"，为它们写一篇"主题总结笔记"<br>
+      ③ <strong>AI 辅助总结：</strong>选中多篇同主题笔记的内容，使用 Obsidian 的 AI 插件（如 Smart Connections）让 AI 帮你生成一篇综合性的知识总结文档</p>
+    </div>
+  </div>
+
+  <div class="workflow">
+    <div class="wf-box">📱 各平台内容<br><small>小红书/微博/微信/抖音</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📥 简悦/Cubox/插件<br><small>剪藏采集</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📂 Obsidian Inbox<br><small>统一收件箱</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">🤖 Aitags 插件<br><small>AI自动打标分类</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">🕸️ 双向链接<br><small>知识图谱生长</small></div>
+  </div>
+</section>
+
+<!-- ==================== 方案三 ==================== -->
+<section id="plan3">
+  <h2>六、方案三：flomo + Notion + n8n 自动化知识工厂</h2>
+
+  <div class="highlight-box amber">
+    <strong>一句话总结：</strong>用 flomo 随手记录碎片灵感，用 n8n 自动化工具从各平台定时抓取内容并让 AI 自动分类，最终汇入 Notion 形成结构化的知识库。自动化程度最高，一次设置、持续收益。
+  </div>
+
+  <h3>核心理念与方法论</h3>
+  <div class="card">
+    <p>本方案融合了小红书博主"秦细细"的 <strong>flomo 卡片笔记 + Notion 系统整理</strong>实践，以及 B 站博主"Xuan_酱"的 <strong>AI 自动化</strong>理念。核心思想是：人负责"灵感记录"和"最终学习"，中间的"采集、分类、整理、关联"全部交给自动化工具完成。</p>
+  </div>
+
+  <h3>所需工具清单</h3>
+  <table class="compare-table">
+    <thead><tr><th>工具名称</th><th>用途</th><th>费用</th><th>获取方式</th></tr></thead>
+    <tbody>
+      <tr><td><strong>flomo</strong></td><td>碎片灵感记录</td><td>免费/Pro 99元/年</td><td><a href="https://flomoapp.com" target="_blank">flomoapp.com</a></td></tr>
+      <tr><td><strong>Notion</strong></td><td>结构化知识库</td><td>免费版够用</td><td><a href="https://www.notion.so" target="_blank">notion.so</a></td></tr>
+      <tr><td><strong>n8n</strong></td><td>自动化工作流引擎</td><td>免费（自部署）/ Cloud 起步$20/月</td><td><a href="https://n8n.io" target="_blank">n8n.io</a></td></tr>
+      <tr><td><strong>WeWe RSS</strong></td><td>微信公众号转RSS</td><td>免费开源</td><td><a href="https://github.com/cooderl/wewe-rss" target="_blank">GitHub: wewe-rss</a></td></tr>
+      <tr><td><strong>RSSHub</strong></td><td>多平台RSS生成</td><td>免费开源</td><td><a href="https://docs.rsshub.app" target="_blank">docs.rsshub.app</a></td></tr>
+      <tr><td><strong>DeepSeek API</strong></td><td>AI 分类和总结</td><td>约0.1元/万字</td><td><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></td></tr>
+    </tbody>
+  </table>
+
+  <h3>保姆级 0→1 搭建步骤</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>搭建 flomo 碎片记录系统（约 10 分钟）</h4>
+      <p><strong>flomo 是干嘛的？</strong>当你突然有个想法、看到一句好话、想到一个灵感时，打开 flomo 几秒钟就能记下来。比发一条微信还简单。</p>
+      <p>① 下载 flomo App（手机+电脑都装）<br>
+      ② 建立标签体系（在 flomo 里用"#标签名"来给笔记分类）：<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<code>#个人成长/阅读笔记</code>、<code>#个人成长/人生感悟</code><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<code>#工作/项目心得</code>、<code>#工作/行业洞察</code><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<code>#灵感/创意想法</code>、<code>#灵感/金句收藏</code><br>
+      ③ 关注 flomo 的微信服务号，之后在微信里直接发消息给它就能记笔记<br>
+      ④ 养成习惯：每天至少记3条想法，哪怕只有一句话</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>搭建 Notion 结构化知识库（约 20 分钟）</h4>
+      <p>参照方案一的步骤 2-3，在 Notion 中建立 PARA 四大分区和核心数据库。额外添加一个"自动采集"数据库：</p>
+      <table class="compare-table">
+        <thead><tr><th>列名</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>标题</td><td>Title</td><td>文章标题</td></tr>
+          <tr><td>原文链接</td><td>URL</td><td>来源网址</td></tr>
+          <tr><td>来源平台</td><td>Select</td><td>公众号/小红书/微博/36氪/抖音</td></tr>
+          <tr><td>AI 摘要</td><td>Text</td><td>AI 自动生成的内容摘要</td></tr>
+          <tr><td>AI 分类</td><td>Select</td><td>AI 自动判断的分类</td></tr>
+          <tr><td>AI 标签</td><td>Multi-select</td><td>AI 自动生成的关键词标签</td></tr>
+          <tr><td>采集时间</td><td>Date</td><td>自动记录</td></tr>
+          <tr><td>是否已读</td><td>Checkbox</td><td>阅读进度跟踪</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>部署 RSS 信息源（约 30 分钟，需少量技术操作）</h4>
+      <p><strong>目标：</strong>让你关注的公众号、小红书博主、微博大V等平台的新内容"自动送上门"，不用自己一个个去刷。</p>
+
+      <p><strong>微信公众号：使用 WeWe RSS</strong></p>
+      <p>WeWe RSS 是一个开源工具，能把你关注的微信公众号变成"RSS 订阅源"（可以理解为"新文章自动推送管道"）。</p>
+      <p>· 简单方案：使用别人部署好的公共服务（在 GitHub 页面查找公共实例地址）<br>
+      · 进阶方案：在自己电脑或云服务器上部署（需要基础的电脑操作知识）</p>
+
+      <p><strong>小红书/微博/36氪：使用 RSSHub</strong></p>
+      <p>RSSHub 支持把几乎任何网站变成 RSS 源，包括小红书、微博、B站、36氪、知乎等。</p>
+      <p>· 使用公共实例：<a href="https://rsshub.app" target="_blank">rsshub.app</a>（免费，但可能不稳定）<br>
+      · 例如：<code>https://rsshub.app/xiaohongshu/user/xxx</code> 可以订阅某个小红书用户的笔记</p>
+
+      <div class="highlight-box amber">
+        <strong>不想折腾技术？简化方案：</strong><br>
+        可以直接使用 <a href="https://follow.is" target="_blank">Folo（follow.is）</a> 这个工具，它内置了 RSSHub 的 5000+ 节点，界面美观，可以很方便地订阅小红书、微博、公众号等各平台内容，不需要自己部署任何东西。
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>配置 n8n 自动化工作流（约 40 分钟）</h4>
+      <p><strong>n8n 是干嘛的？</strong>你可以把它想象成一个"自动流水线"，设好规则后它会按时自动执行一系列操作，比如："每天早上8点 → 从公众号抓取新文章 → 让AI读懂内容并分类 → 把结果存到Notion知识库里"。</p>
+
+      <p><strong>最简使用方式：</strong>注册 <a href="https://n8n.io" target="_blank">n8n Cloud</a>（有免费试用），界面是拖拽式的积木搭建，不需要写代码。</p>
+
+      <p><strong>搭建"自动采集+AI分类"工作流：</strong></p>
+      <p>① <strong>触发器：</strong>设置"每天早上8点执行"（定时触发）<br>
+      ② <strong>获取内容：</strong>连接 RSS 源，拉取最新文章<br>
+      ③ <strong>AI 处理：</strong>把文章内容发送给 DeepSeek API，让 AI 生成摘要、分类和标签<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;发送给 AI 的指令示例：<br></p>
+      <div class="highlight-box">
+        <code style="font-size:0.9em;">"请阅读以下文章，返回JSON格式结果：<br>
+        1. summary: 100字以内的中文摘要<br>
+        2. category: 从[职场技能、投资理财、健康管理、技术学习、人际关系、个人成长]中选一个<br>
+        3. tags: 3-5个关键词标签<br>
+        4. key_points: 3个核心知识点"</code>
+      </div>
+      <p>④ <strong>存储到 Notion：</strong>用 n8n 的 Notion 模块，把 AI 处理后的结果自动写入"自动采集"数据库<br>
+      ⑤ <strong>完成！</strong>每天早上，你的 Notion 知识库里就会自动多出经过 AI 整理的新内容</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <h4>配置"定期知识总结"自动工作流（约 20 分钟）</h4>
+      <p>再建一条自动化流水线，让 AI 每周帮你做一次"知识大扫除"：</p>
+      <p>① <strong>触发器：</strong>每周日晚8点执行<br>
+      ② <strong>获取本周内容：</strong>从 Notion 知识库中拉取本周所有新增条目<br>
+      ③ <strong>按分类分组：</strong>把同一类别的笔记聚在一起<br>
+      ④ <strong>AI 生成总结：</strong>让 AI 为每个类别生成一份"本周知识总结"，包含：<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;· 本周该领域新增了哪些知识点<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;· 这些知识点之间有什么关联<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;· 建议的下一步学习方向<br>
+      ⑤ <strong>保存总结文档：</strong>把总结存回 Notion，或者通过邮件/微信推送给你</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-content">
+      <h4>日常使用：人机协作的知识管理循环</h4>
+      <p><strong>你每天做的（5分钟）：</strong><br>
+      · 有灵感就打开 flomo 随手记<br>
+      · 看到好内容就用 Cubox/简悦 收藏</p>
+      <p><strong>机器每天自动做的：</strong><br>
+      · 从各平台自动抓取你关注的内容<br>
+      · AI 自动阅读、总结、分类、打标签<br>
+      · 自动存入 Notion 知识库</p>
+      <p><strong>你每周做的（1小时）：</strong><br>
+      · 浏览 AI 生成的"本周知识总结"<br>
+      · 对特别有价值的内容深度阅读并写下自己的理解<br>
+      · 在 Notion 中为相关知识建立关联</p>
+    </div>
+  </div>
+
+  <div class="workflow">
+    <div class="wf-box">💡 flomo<br><small>碎片灵感记录</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📡 RSS + n8n<br><small>自动定时采集</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">🤖 DeepSeek AI<br><small>自动摘要+分类+打标</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📊 Notion 知识库<br><small>结构化存储+关联</small></div>
+    <div class="wf-arrow">→</div>
+    <div class="wf-box">📝 AI 周报<br><small>自动知识总结</small></div>
+  </div>
+</section>
+
+<!-- ==================== 个人成长场景 ==================== -->
+<section id="personal-growth">
+  <h2>七、应用场景：个人成长知识库</h2>
+
+  <div class="card">
+    <h3>场景描述</h3>
+    <p>你平时在小红书看到成长干货、在微信公众号读到好文章、在微博发现有深度的讨论、在抖音刷到知识类视频、在36氪看到行业趋势……这些碎片信息散落在不同平台，看完就忘，从未形成体系。</p>
+    <p><strong>目标：</strong>建立一个能自动从上述平台采集内容、AI自动分类打标、知识点之间有逻辑关联、定期输出学习文档的个人成长知识库。</p>
+
+    <h4>推荐方案：方案三（flomo + Notion + n8n）</h4>
+    <p>理由：个人成长内容来源广泛、碎片化程度高，最适合用自动化方案来解决"信息散落"问题。</p>
+
+    <h4>知识库分类设计</h4>
+    <table class="compare-table">
+      <thead><tr><th>一级分类</th><th>二级分类（示例）</th><th>内容来源</th></tr></thead>
+      <tbody>
+        <tr><td><strong>认知提升</strong></td><td>思维模型、决策方法、心理学</td><td>公众号、36氪、书籍笔记</td></tr>
+        <tr><td><strong>能力发展</strong></td><td>写作能力、演讲技巧、英语学习</td><td>小红书、B站、抖音</td></tr>
+        <tr><td><strong>健康管理</strong></td><td>运动健身、饮食营养、睡眠管理</td><td>小红书、微博、抖音</td></tr>
+        <tr><td><strong>财务管理</strong></td><td>投资理财、理财知识、消费观</td><td>公众号、36氪、微博</td></tr>
+        <tr><td><strong>人际关系</strong></td><td>沟通技巧、职场社交、情感智慧</td><td>小红书、公众号</td></tr>
+        <tr><td><strong>兴趣爱好</strong></td><td>阅读、旅行、摄影、烹饪</td><td>小红书、抖音、微博</td></tr>
+      </tbody>
+    </table>
+
+    <h4>采集渠道配置清单</h4>
+    <table class="compare-table">
+      <thead><tr><th>平台</th><th>采集方式</th><th>自动化程度</th></tr></thead>
+      <tbody>
+        <tr><td><strong>小红书</strong></td><td>Cubox 手机分享 / Rednote2Obsidian / RSSHub 订阅</td><td>半自动～全自动</td></tr>
+        <tr><td><strong>微信公众号</strong></td><td>Cubox 微信助手转发 / WeWe RSS + n8n 自动抓取</td><td>半自动～全自动</td></tr>
+        <tr><td><strong>微博</strong></td><td>Cubox 手机分享 / RSSHub 订阅博主 + n8n</td><td>半自动～全自动</td></tr>
+        <tr><td><strong>抖音</strong></td><td>Cubox 复制链接 / RSSHub 订阅</td><td>半自动</td></tr>
+        <tr><td><strong>36氪</strong></td><td>36氪原生 RSS / RSSHub + n8n 自动采集</td><td>全自动</td></tr>
+      </tbody>
+    </table>
+
+    <h4>知识逻辑树示例</h4>
+    <div class="highlight-box">
+      <pre style="font-family: inherit; white-space: pre-wrap;">
+个人成长
+├── 认知提升
+│   ├── 第一性原理思维 ← 关联 → 决策方法论
+│   ├── 心智模型（查理·芒格）← 关联 → 投资决策
+│   └── 元认知 ← 关联 → 学习方法
+├── 能力发展
+│   ├── 时间管理
+│   │   ├── 番茄工作法 ← 关联 → 专注力训练
+│   │   └── GTD方法 ← 关联 → 项目管理
+│   └── 写作能力
+│       ├── 卡片写作法 ← 关联 → 卡片盒笔记法
+│       └── 金字塔原理 ← 关联 → 演讲技巧
+└── 健康管理
+    ├── 运动习惯 ← 关联 → 精力管理
+    └── 睡眠科学 ← 关联 → 认知表现</pre>
+    </div>
+    <p>在 Notion 中通过"关联"属性实现上述连接，在 Obsidian 中通过 <code>[[双向链接]]</code> 实现。AI 在处理新内容时，会建议与已有知识点的关联。</p>
+
+    <h4>自动化总结输出设置</h4>
+    <p>配置 n8n 每周日自动执行：把本周"个人成长"分类下的所有新知识点提取出来，让 AI 生成一份"本周个人成长知识小报"，格式包括：本周新学知识、关键知识点回顾、推荐深入阅读的内容、下周学习建议。这份小报会自动保存到 Notion 并通过微信/邮件推送给你。</p>
+  </div>
+</section>
+
+<!-- ==================== 工作场景 ==================== -->
+<section id="work">
+  <h2>八、应用场景：工作知识库</h2>
+
+  <div class="card">
+    <h3>场景描述</h3>
+    <p>工作中会积累大量专业知识：会议纪要、项目经验、行业报告、技术文档、客户反馈……但这些知识分散在各处，需要时找不到，离职换工作时全部丢失。</p>
+    <p><strong>目标：</strong>建立一个能系统化管理工作知识、方便快速检索、团队可协作、定期沉淀为可复用经验的工作知识库。</p>
+
+    <h4>推荐方案：方案一（Notion + Cubox）</h4>
+    <p>理由：工作场景更需要协作和分享能力，Notion 的云端特性和团队协作功能最合适。</p>
+
+    <h4>知识库分类设计</h4>
+    <table class="compare-table">
+      <thead><tr><th>一级分类</th><th>二级分类（示例）</th><th>内容来源</th></tr></thead>
+      <tbody>
+        <tr><td><strong>行业知识</strong></td><td>行业趋势、竞品分析、市场数据</td><td>36氪、公众号、行业报告</td></tr>
+        <tr><td><strong>专业技能</strong></td><td>工具使用、方法论、最佳实践</td><td>公众号、B站、技术博客</td></tr>
+        <tr><td><strong>项目经验</strong></td><td>项目复盘、踩坑记录、成功案例</td><td>个人记录、团队分享</td></tr>
+        <tr><td><strong>会议记录</strong></td><td>决策记录、行动项、讨论纪要</td><td>会议现场记录</td></tr>
+        <tr><td><strong>人脉资源</strong></td><td>联系人信息、合作记录、业务关系</td><td>个人记录</td></tr>
+        <tr><td><strong>流程SOP</strong></td><td>工作流程、操作指南、检查清单</td><td>经验沉淀</td></tr>
+      </tbody>
+    </table>
+
+    <h4>采集渠道配置</h4>
+    <table class="compare-table">
+      <thead><tr><th>内容来源</th><th>采集方式</th></tr></thead>
+      <tbody>
+        <tr><td>行业报告/36氪/公众号</td><td>Cubox 一键收藏 → 整理到 Notion</td></tr>
+        <tr><td>会议纪要</td><td>会议中用 Notion 直接记录 / 飞书会议记录导出到 Notion</td></tr>
+        <tr><td>项目复盘</td><td>在 Notion 中使用"复盘模板"直接撰写</td></tr>
+        <tr><td>同事分享</td><td>Notion 团队空间直接协作编写</td></tr>
+        <tr><td>技术文档</td><td>简悦/Save to Notion 浏览器插件一键保存</td></tr>
+      </tbody>
+    </table>
+
+    <h4>工作知识逻辑树示例</h4>
+    <div class="highlight-box">
+      <pre style="font-family: inherit; white-space: pre-wrap;">
+工作知识库
+├── 行业知识
+│   ├── 市场趋势2026 ← 关联 → 竞品分析
+│   ├── 用户需求洞察 ← 关联 → 产品规划
+│   └── 行业政策变化 ← 关联 → 业务策略
+├── 专业技能
+│   ├── 数据分析方法 ← 关联 → 项目复盘
+│   ├── 产品设计原则 ← 关联 → 用户需求
+│   └── 项目管理框架 ← 关联 → 会议记录
+└── 经验沉淀
+    ├── 项目A复盘 ← 关联 → 流程SOP优化
+    └── 客户沟通经验 ← 关联 → 人脉资源</pre>
+    </div>
+
+    <h4>自动化总结：月度工作知识报告</h4>
+    <p>配置 n8n 每月1日自动执行：汇总上月所有新增的工作知识条目，AI 生成一份"月度工作知识沉淀报告"，内容包括：本月新增知识点统计、各类别知识增长情况、关键项目经验摘要、建议建立的新SOP。这份报告可以作为月度工作总结的参考素材。</p>
+  </div>
+</section>
+
+<!-- ==================== 工具速查表 ==================== -->
+<section id="tools">
+  <h2>九、工具与平台速查表</h2>
+  <table class="compare-table">
+    <thead><tr><th>工具名称</th><th>一句话说明</th><th>费用</th><th>官网/下载</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Notion</strong></td><td>云端万能工作台，搭建知识库的主战场</td><td>免费版够用</td><td><a href="https://www.notion.so" target="_blank">notion.so</a></td></tr>
+      <tr><td><strong>Obsidian</strong></td><td>本地笔记软件，双向链接织知识网</td><td>个人免费</td><td><a href="https://obsidian.md" target="_blank">obsidian.md</a></td></tr>
+      <tr><td><strong>flomo</strong></td><td>极简卡片笔记，随手记灵感</td><td>免费/99元/年</td><td><a href="https://flomoapp.com" target="_blank">flomoapp.com</a></td></tr>
+      <tr><td><strong>Cubox</strong></td><td>多平台一键收藏，AI智能摘要</td><td>免费/98元/年</td><td><a href="https://cubox.pro" target="_blank">cubox.pro</a></td></tr>
+      <tr><td><strong>简悦 SimpRead</strong></td><td>浏览器阅读增强+网页剪藏神器</td><td>免费/68元买断</td><td><a href="https://simpread.pro" target="_blank">simpread.pro</a></td></tr>
+      <tr><td><strong>n8n</strong></td><td>开源自动化工具，搭积木式连接软件</td><td>自部署免费</td><td><a href="https://n8n.io" target="_blank">n8n.io</a></td></tr>
+      <tr><td><strong>WeWe RSS</strong></td><td>把微信公众号变成可订阅的RSS源</td><td>免费开源</td><td><a href="https://github.com/cooderl/wewe-rss" target="_blank">GitHub</a></td></tr>
+      <tr><td><strong>RSSHub</strong></td><td>万能RSS生成器，支持几乎所有平台</td><td>免费开源</td><td><a href="https://docs.rsshub.app" target="_blank">docs.rsshub.app</a></td></tr>
+      <tr><td><strong>Folo</strong></td><td>新一代RSS阅读器，内置RSSHub节点</td><td>免费</td><td><a href="https://follow.is" target="_blank">follow.is</a></td></tr>
+      <tr><td><strong>DeepSeek</strong></td><td>国产AI大模型，性价比极高</td><td>约0.1元/万字</td><td><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></td></tr>
+      <tr><td><strong>Heptabase</strong></td><td>可视化白板笔记，拖拽式知识管理</td><td>$11.99/月</td><td><a href="https://heptabase.com" target="_blank">heptabase.com</a></td></tr>
+      <tr><td><strong>Save to Notion</strong></td><td>Chrome插件，网页一键存Notion</td><td>免费</td><td>Chrome 应用商店搜索</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ==================== 参考资料 ==================== -->
+<section id="refs">
+  <h2>十、参考资料与原文链接</h2>
+
+  <div class="card">
+    <h4>B站视频资源</h4>
+    <p>
+      · 二一的笔记 —《<a href="https://www.bilibili.com/video/BV18qyrB5EEH/" target="_blank">40分钟沉浸式拆解：个人知识体系搭建与Notion工作流管理</a>》<br>
+      · 二一的笔记 —《<a href="https://www.bilibili.com/video/BV1od6dBXEY2/" target="_blank">Notion 2026最强入门教程！5个步骤速通个人知识库搭建</a>》<br>
+      · 二一的笔记 —《<a href="https://www.bilibili.com/video/BV1zf421B7pb/" target="_blank">爆肝2个月，最强白板笔记Heptabase硬核测评</a>》<br>
+      · Johnny学 —《<a href="https://www.bilibili.com/video/BV1i3411k7TQ/" target="_blank">公开课第一集：将近3小时的Obsidian小白入门课</a>》<br>
+      · Johnny学 —《<a href="https://www.bilibili.com/video/BV1844y1Y7wt/" target="_blank">用Obsidian管理18000条笔记是什么体验</a>》<br>
+      · Shiki实验室 —《<a href="https://www.bilibili.com/video/BV1hPp8zrEuz/" target="_blank">新人搞定Obsidian+AI？实战手册来了</a>》<br>
+      · Shiki实验室 —《<a href="https://www.bilibili.com/video/BV1Tu411F79L/" target="_blank">Obsidian一键收藏网页，打造第二大脑全流程</a>》<br>
+      · Xuan_酱 —《<a href="https://www.bilibili.com/video/BV1XBxse5EcP/" target="_blank">最适合普通人的本地AI知识库！（38.9万播放）</a>》<br>
+      · 姜饼资 —《<a href="https://www.bilibili.com/video/BV1d54y1T7GE/" target="_blank">Notion新手教学（2小时36分钟超长教程）</a>》<br>
+      · 姜饼资 —《<a href="https://www.bilibili.com/video/BV1YadUYrEU7/" target="_blank">如何打造高效Notion工作系统</a>》<br>
+      ·《<a href="https://www.bilibili.com/video/BV1k8411B7m7/" target="_blank">构建第二大脑：用PARA框架实现高效知识管理</a>》<br>
+      ·《<a href="https://www.bilibili.com/video/BV1XR4aezEhD/" target="_blank">Zettelkasten Navigation：打造卢曼卡片盒笔记系统</a>》
+    </p>
+
+    <h4>小红书/网页资源</h4>
+    <p>
+      · 人生管理指南-RAY — <a href="https://www.notion.com/zh-cn/templates/personal-wiki" target="_blank">Notion官方模板：Personal Wiki</a><br>
+      · 小胡的第二大脑 — <a href="https://www.notion.com/en-gb/templates/xiaohu-v2" target="_blank">第二大脑v2 Notion模板</a><br>
+      · 小胡的第二大脑 — <a href="https://www.notion.com/@hubrainai" target="_blank">35个Notion模板合集</a><br>
+      · Leam — <a href="https://www.notion.com/zh-cn/templates/creator01" target="_blank">内容创作系统 Notion模板</a>
+    </p>
+
+    <h4>深度文章</h4>
+    <p>
+      · 少数派 —《<a href="https://sspai.com/post/104783" target="_blank">AI时代知识管理系统(2025版)</a>》<br>
+      · 少数派 —《<a href="https://sspai.com/post/80845" target="_blank">用Notion搭建第二大脑</a>》<br>
+      · 少数派 —《<a href="https://sspai.com/post/80802" target="_blank">如何构建第二大脑：Obsidian实践配方</a>》<br>
+      · 二一的笔记 —《<a href="https://eryinote.com/post/361" target="_blank">PARA知识管理系统详解</a>》<br>
+      · flomo官方 —《<a href="https://help.flomoapp.com/thinking/pkm.html" target="_blank">个人知识管理理念</a>》<br>
+      · PKMer社区 —《<a href="https://pkmer.cn/Pkmer-Docs/10-obsidian/obsidian%E7%A4%BE%E5%8C%BA%E6%8F%92%E4%BB%B6/xiaohongshu-importer/" target="_blank">Obsidian小红书导入插件</a>》
+    </p>
+
+    <h4>推荐书籍</h4>
+    <p>
+      · Tiago Forte —《Building a Second Brain》（中文版《打造第二大脑》）—— PARA和CODE方法论的原著<br>
+      · Sönke Ahrens —《How to Take Smart Notes》（中文版《卡片笔记写作法》）—— 卡片盒笔记法系统讲解<br>
+      · Shiki实验室 —《上头Obsidian：手把手教你用AI做好知识管理》—— 中文原创Obsidian+AI实战<br>
+      · 人生管理指南-RAY —《Notion人生系统：用系统化思维设计理想生活》—— Notion实战应用
+    </p>
+  </div>
+</section>
+
+</div><!-- end container -->
+
+<footer>
+  <div class="container">
+    <p>本指南基于小红书、B站头部知识管理博主的最新公开内容整理而成</p>
+    <p>信息收集截止于 2026 年 4 月 · 工具和价格可能会有变化，请以官网为准</p>
+    <p style="margin-top:12px;">Made with care · 祝你搭建属于自己的第二大脑</p>
+  </div>
+</footer>
+
+</body>
+</html>
