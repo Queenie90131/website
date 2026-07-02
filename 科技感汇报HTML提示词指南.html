@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>科技感汇报 HTML 提示词指南 — 从提示词到震撼呈现</title>
+<style>
+/* ============================================
+   CSS RESET & BASE
+   ============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a1628;
+  --bg-secondary: #0f1f3d;
+  --bg-card: rgba(15, 31, 61, 0.7);
+  --bg-card-hover: rgba(20, 40, 80, 0.85);
+  --text-primary: #e8edf5;
+  --text-secondary: #8899b4;
+  --text-muted: #5a6a85;
+  --accent-blue: #00b4d8;
+  --accent-blue-glow: rgba(0, 180, 216, 0.3);
+  --accent-orange: #ff8c00;
+  --accent-orange-glow: rgba(255, 140, 0, 0.3);
+  --accent-green: #00e676;
+  --accent-purple: #b388ff;
+  --border-subtle: rgba(100, 130, 180, 0.15);
+  --border-accent: rgba(0, 180, 216, 0.3);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 30px var(--accent-blue-glow);
+  --transition-fast: 0.2s ease-in-out;
+  --transition-normal: 0.4s ease-in-out;
+  --transition-slow: 0.8s ease-in-out;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   ANIMATED BACKGROUND
+   ============================================ */
+.bg-particles {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bg-particles span {
+  position: absolute; display: block;
+  width: 2px; height: 2px;
+  background: var(--accent-blue);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0% { opacity: 0; transform: translateY(100vh) scale(0); }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.2; }
+  100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+}
+
+.bg-grid {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 180, 216, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 216, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+.page-wrapper {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10, 22, 40, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: var(--transition-normal);
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+}
+.nav-logo {
+  font-size: 14px; font-weight: 600;
+  color: var(--accent-blue);
+  letter-spacing: 1px;
+}
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--text-secondary);
+  text-decoration: none; cursor: pointer;
+  transition: var(--transition-fast);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--accent-blue);
+  background: rgba(0, 180, 216, 0.08);
+  border-color: var(--border-accent);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+  position: relative;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 18px; border-radius: 100px;
+  background: rgba(0, 180, 216, 0.1);
+  border: 1px solid var(--border-accent);
+  font-size: 12px; color: var(--accent-blue);
+  margin-bottom: 32px;
+  animation: fadeInUp 0.8s ease-out;
+}
+.hero-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent-blue);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+.hero h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700; line-height: 1.2;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #e8edf5 0%, var(--accent-blue) 50%, var(--accent-orange) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 0.8s ease-out 0.1s both;
+}
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-secondary);
+  max-width: 680px; line-height: 1.8;
+  margin-bottom: 48px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+.hero-stats {
+  display: flex; gap: 48px; flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num {
+  font-size: 36px; font-weight: 700;
+  color: var(--accent-blue);
+  font-variant-numeric: tabular-nums;
+}
+.hero-stat-label {
+  font-size: 13px; color: var(--text-muted);
+  margin-top: 4px;
+}
+.scroll-hint {
+  position: absolute; bottom: 40px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; color: var(--text-muted); font-size: 12px;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+.scroll-arrow {
+  width: 20px; height: 20px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg);
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: rotate(45deg) translate(0, 0); }
+  50% { transform: rotate(45deg) translate(4px, 4px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+.section {
+  padding: 80px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.section-header {
+  margin-bottom: 48px;
+}
+.section-tag {
+  display: inline-block;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent-blue);
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 700; line-height: 1.3;
+  margin-bottom: 12px;
+}
+.section-desc {
+  font-size: 16px; color: var(--text-secondary);
+  max-width: 600px; line-height: 1.7;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  transition: var(--transition-normal);
+}
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+.card-grid {
+  display: grid; gap: 20px;
+}
+.card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.card-grid-4 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+.card-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 16px;
+}
+.card-icon.blue { background: rgba(0, 180, 216, 0.15); color: var(--accent-blue); }
+.card-icon.orange { background: rgba(255, 140, 0, 0.15); color: var(--accent-orange); }
+.card-icon.green { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+.card-icon.purple { background: rgba(179, 136, 255, 0.15); color: var(--accent-purple); }
+
+.card-title {
+  font-size: 16px; font-weight: 600;
+  margin-bottom: 8px;
+}
+.card-text {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ============================================
+   PROMPT TEMPLATE BLOCKS
+   ============================================ */
+.prompt-block {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin: 16px 0;
+  position: relative;
+  overflow: hidden;
+}
+.prompt-block::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-orange));
+}
+.prompt-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--accent-orange);
+  margin-bottom: 12px;
+}
+.prompt-text {
+  font-family: var(--font-mono);
+  font-size: 13px; line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.prompt-text .hl-blue { color: var(--accent-blue); }
+.prompt-text .hl-orange { color: var(--accent-orange); }
+.prompt-text .hl-green { color: var(--accent-green); }
+.prompt-text .hl-muted { color: var(--text-muted); }
+
+.copy-btn {
+  position: absolute; top: 16px; right: 16px;
+  padding: 4px 12px; border-radius: var(--radius-sm);
+  background: rgba(0, 180, 216, 0.15);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-blue);
+  font-size: 11px; cursor: pointer;
+  transition: var(--transition-fast);
+}
+.copy-btn:hover {
+  background: rgba(0, 180, 216, 0.25);
+}
+
+/* ============================================
+   METHOD FRAMEWORK CARDS
+   ============================================ */
+.method-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+.method-card::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px;
+  background: radial-gradient(circle, var(--accent-blue-glow) 0%, transparent 70%);
+  opacity: 0; transition: var(--transition-normal);
+}
+.method-card:hover::after { opacity: 1; }
+.method-card:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+}
+.method-name {
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.method-name-en {
+  font-size: 12px; color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+.method-core {
+  font-size: 15px; color: var(--accent-blue);
+  font-weight: 500; margin-bottom: 16px;
+  padding: 12px 16px;
+  background: rgba(0, 180, 216, 0.06);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent-blue);
+}
+.method-steps {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 16px;
+}
+.method-step {
+  padding: 6px 14px; border-radius: 100px;
+  background: rgba(0, 180, 216, 0.1);
+  border: 1px solid var(--border-accent);
+  font-size: 12px; color: var(--accent-blue);
+}
+.method-scenario {
+  font-size: 13px; color: var(--text-secondary);
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+.method-scenario strong { color: var(--text-primary); }
+
+/* ============================================
+   RESOURCE LINKS
+   ============================================ */
+.resource-group { margin-bottom: 32px; }
+.resource-group-title {
+  font-size: 16px; font-weight: 600;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.resource-list { display: flex; flex-direction: column; gap: 8px; }
+.resource-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+}
+.resource-item:hover {
+  border-color: var(--border-accent);
+  background: var(--bg-card-hover);
+}
+.resource-icon {
+  flex-shrink: 0; width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 180, 216, 0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.resource-name { font-size: 14px; font-weight: 600; }
+.resource-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.resource-url { font-size: 11px; color: var(--accent-blue); margin-top: 2px; }
+
+/* ============================================
+   ANIMATION DEMO AREA
+   ============================================ */
+.anim-demo {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  margin: 24px 0;
+}
+.anim-demo-title {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+.anim-row {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.anim-box {
+  width: 80px; height: 80px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text-secondary);
+  text-align: center;
+}
+.anim-breathe {
+  background: rgba(0, 180, 216, 0.15);
+  border: 1px solid var(--accent-blue);
+  animation: breathe 3s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 8px var(--accent-blue-glow); transform: scale(1); }
+  50% { box-shadow: 0 0 24px var(--accent-blue-glow); transform: scale(1.05); }
+}
+.anim-float {
+  background: rgba(255, 140, 0, 0.15);
+  border: 1px solid var(--accent-orange);
+  animation: floatY 3s ease-in-out infinite;
+}
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.anim-glow {
+  background: rgba(0, 230, 118, 0.15);
+  border: 1px solid var(--accent-green);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; box-shadow: 0 0 20px rgba(0, 230, 118, 0.3); }
+}
+.anim-rotate {
+  background: rgba(179, 136, 255, 0.15);
+  border: 1px solid var(--accent-purple);
+  animation: slowRotate 8s linear infinite;
+}
+@keyframes slowRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Progress bar demo */
+.progress-demo { margin-top: 16px; }
+.progress-bar-track {
+  height: 6px; background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px; overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-orange));
+  width: 0;
+  transition: width 1.5s ease-in-out;
+}
+.progress-bar-fill.animated { width: var(--fill); }
+
+/* ============================================
+   DECISION TREE
+   ============================================ */
+.decision-tree {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  margin: 24px 0;
+}
+.tree-level {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.tree-node {
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  background: rgba(0, 180, 216, 0.1);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-blue);
+  white-space: nowrap;
+}
+.tree-node.result {
+  background: rgba(255, 140, 0, 0.1);
+  border-color: rgba(255, 140, 0, 0.3);
+  color: var(--accent-orange);
+}
+.tree-arrow {
+  color: var(--text-muted); font-size: 14px;
+}
+
+/* ============================================
+   SKILL BLOCK
+   ============================================ */
+.skill-block {
+  background: linear-gradient(135deg, rgba(0, 180, 216, 0.05), rgba(255, 140, 0, 0.05));
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+}
+.skill-name {
+  font-size: 24px; font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent-blue);
+  margin-bottom: 12px;
+}
+.skill-desc {
+  font-size: 15px; color: var(--text-secondary);
+  max-width: 500px; margin: 0 auto 24px;
+}
+.skill-trigger {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border-radius: 100px;
+  background: rgba(0, 180, 216, 0.15);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+.skill-trigger:hover {
+  background: rgba(0, 180, 216, 0.25);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  padding: 60px 0;
+  text-align: center;
+  border-top: 1px solid var(--border-subtle);
+}
+.footer-text {
+  font-size: 13px; color: var(--text-muted);
+  line-height: 1.8;
+}
+.footer-links {
+  display: flex; justify-content: center; gap: 24px;
+  margin-top: 16px; flex-wrap: wrap;
+}
+.footer-link {
+  font-size: 12px; color: var(--accent-blue);
+  text-decoration: none;
+}
+.footer-link:hover { text-decoration: underline; }
+
+/* ============================================
+   SCROLL REVEAL
+   ============================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hero-stats { gap: 24px; }
+  .hero-stat-num { font-size: 28px; }
+  .card-grid-2, .card-grid-3, .card-grid-4 {
+    grid-template-columns: 1fr;
+  }
+  .section { padding: 48px 0; }
+}
+
+/* ============================================
+   TABLE STYLES
+   ============================================ */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.styled-table th {
+  background: rgba(0, 180, 216, 0.1);
+  color: var(--accent-blue);
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid var(--border-accent);
+}
+.styled-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.styled-table tr:hover td {
+  background: rgba(0, 180, 216, 0.03);
+}
+
+/* ============================================
+   TAG / BADGE
+   ============================================ */
+.tag {
+  display: inline-block;
+  padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.tag-blue { background: rgba(0, 180, 216, 0.15); color: var(--accent-blue); }
+.tag-orange { background: rgba(255, 140, 0, 0.15); color: var(--accent-orange); }
+.tag-green { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+.tag-purple { background: rgba(179, 136, 255, 0.15); color: var(--accent-purple); }
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+  margin: 40px 0;
+}
+
+/* ============================================
+   TIMELINE (for roadmap section)
+   ============================================ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-orange), var(--accent-green));
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-normal);
+}
+.timeline-item:hover {
+  border-color: var(--border-accent);
+}
+.timeline-item::before {
+  content: '';
+  position: absolute; left: -28px; top: 20px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 8px var(--accent-blue-glow);
+}
+.timeline-item-title {
+  font-size: 14px; font-weight: 600;
+  margin-bottom: 4px;
+}
+.timeline-item-text {
+  font-size: 13px; color: var(--text-secondary);
+}
+
+/* ============================================
+   COMPARISON TABLE
+   ============================================ */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.comparison-cell {
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  transition: var(--transition-fast);
+}
+.comparison-cell:hover {
+  border-color: var(--border-accent);
+}
+.comparison-cell .label {
+  font-size: 11px; color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.comparison-cell .value {
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+}
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-particles" id="particles"></div>
+<div class="bg-grid"></div>
+
+<!-- Navigation -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <div class="nav-logo">TECH PRESENTATION GUIDE</div>
+    <div class="nav-links">
+      <a class="nav-link active" data-target="hero">首页</a>
+      <a class="nav-link" data-target="prompt">提示词工程</a>
+      <a class="nav-link" data-target="resources">学习资源</a>
+      <a class="nav-link" data-target="methods">方法论</a>
+      <a class="nav-link" data-target="animation">动效设计</a>
+      <a class="nav-link" data-target="skill">Skill</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <!-- ==========================================
+       HERO
+       ========================================== -->
+  <section class="hero" id="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      2026 最新版 · 完整教学指南
+    </div>
+    <h1>科技感汇报 HTML<br>提示词完全指南</h1>
+    <p class="hero-sub">
+      从提示词写作到震撼呈现——系统掌握 AI 生成科技感 HTML 汇报文档的核心方法论，<br>
+      涵盖路线图、框架图、数据图表与克制动效设计。
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="3">0</div>
+        <div class="hero-stat-label">完整提示词模板</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="6">0</div>
+        <div class="hero-stat-label">汇报方法论框架</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="15">0</div>
+        <div class="hero-stat-label">推荐学习资源</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" data-count="5">0</div>
+        <div class="hero-stat-label">核心教学模块</div>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span>向下滚动开始学习</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       MODULE 1: PROMPT ENGINEERING
+       ========================================== -->
+  <section class="section" id="prompt">
+    <div class="section-header reveal">
+      <div class="section-tag">Module 01</div>
+      <h2 class="section-title">提示词工程</h2>
+      <p class="section-desc">掌握「五层结构」提示词框架，让 AI 精准生成你想要的科技感汇报文档。</p>
+    </div>
+
+    <!-- 5-Layer Framework -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">五层提示词结构框架</h3>
+      <div class="card-grid card-grid-5" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon blue">1</div>
+          <div class="card-title">角色设定</div>
+          <div class="card-text">定义 AI 的专业身份与能力边界</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon orange">2</div>
+          <div class="card-title">风格定义</div>
+          <div class="card-text">指定视觉风格、配色方案、整体调性</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon green">3</div>
+          <div class="card-title">内容结构</div>
+          <div class="card-text">明确文档包含的模块、图表、数据</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon purple">4</div>
+          <div class="card-title">动效要求</div>
+          <div class="card-text">指定微动效类型、节奏、克制原则</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon blue">5</div>
+          <div class="card-title">技术约束</div>
+          <div class="card-text">限定技术栈、输出格式、兼容性要求</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Style Keywords -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">风格关键词库</h3>
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="card-title">深色系赛博朋克</div>
+          <div class="card-text" style="margin-top: 8px;">
+            <span class="tag tag-blue">深蓝背景</span>
+            <span class="tag tag-blue">霓虹发光</span>
+            <span class="tag tag-blue">3D 元素</span>
+            <span class="tag tag-blue">粒子效果</span>
+            <span class="tag tag-blue">毛玻璃</span>
+            <span class="tag tag-blue">网格线</span>
+          </div>
+          <div class="card-text" style="margin-top: 12px;">适合：技术架构汇报、年度总结、数据大屏</div>
+        </div>
+        <div class="card">
+          <div class="card-title">简约科技白</div>
+          <div class="card-text" style="margin-top: 8px;">
+            <span class="tag tag-green">干净留白</span>
+            <span class="tag tag-green">高对比度</span>
+            <span class="tag tag-green">精致动效</span>
+            <span class="tag tag-green">圆角卡片</span>
+            <span class="tag tag-green">微阴影</span>
+          </div>
+          <div class="card-text" style="margin-top: 12px;">适合：产品发布、战略汇报、高管沟通</div>
+        </div>
+        <div class="card">
+          <div class="card-title">数据仪表盘风</div>
+          <div class="card-text" style="margin-top: 8px;">
+            <span class="tag tag-orange">模块化布局</span>
+            <span class="tag tag-orange">实时数据</span>
+            <span class="tag tag-orange">进度环</span>
+            <span class="tag tag-orange">趋势图</span>
+            <span class="tag tag-orange">KPI 卡片</span>
+          </div>
+          <div class="card-text" style="margin-top: 12px;">适合：业务汇报、项目监控、运营分析</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Animation Keywords -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">动效关键词库</h3>
+      <div class="comparison-grid">
+        <div class="comparison-cell">
+          <div class="label">呼吸灯</div>
+          <div class="value">breathe / pulse</div>
+        </div>
+        <div class="comparison-cell">
+          <div class="label">粒子背景</div>
+          <div class="value">particle drift</div>
+        </div>
+        <div class="comparison-cell">
+          <div class="label">数据滚动</div>
+          <div class="value">count-up / roll</div>
+        </div>
+        <div class="comparison-cell">
+          <div class="label">渐变流动</div>
+          <div class="value">gradient flow</div>
+        </div>
+        <div class="comparison-cell">
+          <div class="label">悬浮卡片</div>
+          <div class="value">hover lift</div>
+        </div>
+        <div class="comparison-cell">
+          <div class="label">滚动渐入</div>
+          <div class="value">scroll reveal</div>
+        </div>
+        <div class="comparison-cell">
+          <div class="label">渐进描边</div>
+          <div class="value">stroke draw</div>
+        </div>
+        <div class="comparison-cell">
+          <div class="label">分层渐入</div>
+          <div class="value">stagger fade-in</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Prompt Templates -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">三套完整提示词模板</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;">
+        以下模板可直接复制使用，根据实际需求替换 <span style="color: var(--accent-orange);">[方括号]</span> 中的内容。
+      </p>
+
+      <!-- Template A -->
+      <div class="prompt-block">
+        <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+        <div class="prompt-label">模板 A · 深色赛博朋克风项目汇报</div>
+        <div class="prompt-text"><span class="hl-blue">【角色设定】</span>
+你是一位资深前端设计师和数据可视化专家，擅长制作科技感十足的 HTML 汇报文档。
+
+<span class="hl-blue">【风格定义】</span>
+- 整体风格：深色赛博朋克科技感，主色调为深蓝黑（#0a1628）
+- 强调色：霓虹蓝（#00b4d8）+ 橙色（#ff8c00）
+- 卡片使用毛玻璃效果（backdrop-filter: blur）
+- 背景包含低透明度网格线和粒子飘浮效果
+- 字体使用系统无衬线字体，数据数字使用等宽字体
+
+<span class="hl-blue">【内容结构】</span>
+请生成一个完整的单页 HTML 文档，包含以下模块：
+1. 封面区域：项目标题 + 副标题 + 关键数据概览（3-4 个数字指标）
+2. 项目路线图：时间轴形式展示 [填写你的项目阶段]，每个节点包含日期和里程碑
+3. 系统架构图：分层展示 [填写你的架构层级]，使用卡片堆叠效果
+4. 数据图表区：
+   - 柱状图展示 [填写对比数据]
+   - 环形图展示 [填写占比数据]
+   - 趋势折线图展示 [填写趋势数据]
+5. 关键成果卡片：4-6 张卡片展示核心成果
+
+<span class="hl-blue">【动效要求】</span>
+- 页面加载时各模块依次渐入（stagger 0.1s）
+- 数字指标从 0 滚动到目标值（duration 1.5s）
+- 卡片 hover 时轻微上浮（transform: translateY(-2px)）
+- 路线图节点依次点亮
+- 图表数据条从 0 填充到目标值
+- 背景粒子缓慢飘浮
+- 所有动效使用 ease-in-out 缓动，克制不花哨
+
+<span class="hl-blue">【技术约束】</span>
+- 纯 HTML 单文件，CSS 和 JS 全部内联
+- 图表使用纯 CSS 实现或引入 Chart.js CDN
+- 响应式设计，适配桌面端（1200px）和平板端
+- 不使用任何需要安装的依赖
+- 确保在 Chrome / Safari / Firefox 中正常显示</div>
+      </div>
+
+      <!-- Template B -->
+      <div class="prompt-block">
+        <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+        <div class="prompt-label">模板 B · 简约科技白产品战略汇报</div>
+        <div class="prompt-text"><span class="hl-blue">【角色设定】</span>
+你是一位 Apple/Stripe 风格的 UI 设计师，擅长制作极简而精致的 HTML 汇报文档。
+
+<span class="hl-blue">【风格定义】</span>
+- 整体风格：简约科技白，大量留白，高对比度
+- 主背景：近白色（#f8f9fc），卡片纯白（#ffffff）
+- 强调色：深蓝（#1a1a6c）+ 亮蓝（#4361ee）
+- 圆角卡片 + 微阴影（box-shadow: 0 2px 12px rgba(0,0,0,0.06)）
+- 字体层次分明：标题 28px/700，正文 15px/400，辅助 13px/500
+
+<span class="hl-blue">【内容结构】</span>
+请生成一个完整的单页 HTML 文档，包含以下模块：
+1. 战略概览：一句话愿景 + 3 个核心战略方向卡片
+2. 产品路线图：横向时间轴，展示 [填写产品阶段]
+3. 市场数据：
+   - 大数字 KPI 展示（TAM/SAM/SOM）
+   - 市场份额饼图
+   - 增长趋势面积图
+4. 竞争格局：2x2 矩阵或对比表格
+5. 行动计划：优先级矩阵 + 下一步行动清单
+
+<span class="hl-blue">【动效要求】</span>
+- 滚动时各区块从下方优雅渐入（opacity 0→1, translateY 20px→0）
+- KPI 数字计数动画（duration 2s, ease-out）
+- 卡片 hover 时阴影加深 + 轻微上浮
+- 图表数据平滑绘制动画
+- 保持克制：同一页面同时出现的动效不超过 3 个
+
+<span class="hl-blue">【技术约束】</span>
+- 纯 HTML 单文件，内联 CSS + JS
+- 图表使用 Chart.js CDN（轻量级）
+- 支持 prefers-reduced-motion 媒体查询
+- 响应式，移动端友好
+- 所有资源使用 CDN，无需本地依赖</div>
+      </div>
+
+      <!-- Template C -->
+      <div class="prompt-block">
+        <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+        <div class="prompt-label">模板 C · 数据仪表盘风业务总结</div>
+        <div class="prompt-text"><span class="hl-blue">【角色设定】</span>
+你是一位数据可视化专家，擅长制作 Grafana/数据大屏风格的 HTML 业务仪表盘。
+
+<span class="hl-blue">【风格定义】</span>
+- 整体风格：数据仪表盘，模块化网格布局
+- 背景：深灰蓝（#0d1117）
+- 卡片：深色半透明（rgba(22, 27, 34, 0.8)）+ 细边框
+- 强调色：绿（#3fb950）+ 蓝（#58a6ff）+ 橙（#d29922）+ 红（#f85149）
+- 数据数字使用等宽字体，颜色根据正负变化
+
+<span class="hl-blue">【内容结构】</span>
+请生成一个完整的单页 HTML 文档，包含以下模块：
+1. 顶部 KPI 栏：4-6 个关键指标卡片（带同比/环比变化箭头）
+2. 核心图表区（2x2 网格）：
+   - 收入趋势折线图（近 12 个月）
+   - 业务占比环形图
+   - 区域分布柱状图
+   - 转化率漏斗图
+3. 排行榜：Top 5 产品/区域/团队的横向条形图
+4. 异常预警区：高亮显示需要关注的指标
+
+<span class="hl-blue">【动效要求】</span>
+- 数据加载时数值从 0 滚动到目标值
+- 图表依次绘制（stagger 0.2s）
+- 异常指标卡片有轻微红色呼吸效果
+- 实时时钟显示（右上角）
+- 数据刷新按钮 + 加载动画
+
+<span class="hl-blue">【技术约束】</span>
+- 纯 HTML 单文件，内联 CSS + JS
+- 图表使用 Chart.js CDN
+- 使用 CSS Grid 实现仪表盘布局
+- 支持窗口 resize 自适应
+- 模拟数据即可，无需真实 API 连接</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Prompt Tips -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">提示词优化技巧</h3>
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <div class="card-icon green">✓</div>
+          <div class="card-title">给具体数值而非模糊描述</div>
+          <div class="card-text">
+            <span style="color: var(--accent-green);">好：</span>"卡片圆角 12px，间距 20px，字体 14px"<br>
+            <span style="color: var(--accent-orange);">差：</span>"卡片好看一点，间距适中"
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-icon green">✓</div>
+          <div class="card-title">用参考锚定风格</div>
+          <div class="card-text">
+            <span style="color: var(--accent-green);">好：</span>"参考 Stripe 官网的视觉风格"<br>
+            <span style="color: var(--accent-orange);">差：</span>"要高级感"
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-icon green">✓</div>
+          <div class="card-title">分步迭代而非一步到位</div>
+          <div class="card-text">
+            <span style="color: var(--accent-green);">好：</span>先出结构 → 再调样式 → 最后加动效<br>
+            <span style="color: var(--accent-orange);">差：</span>一次性要求所有细节完美
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-icon green">✓</div>
+          <div class="card-title">明确「不要什么」</div>
+          <div class="card-text">
+            <span style="color: var(--accent-green);">好：</span>"不要弹跳动画，不要彩虹色"<br>
+            <span style="color: var(--accent-orange);">差：</span>只说"要克制"
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       MODULE 2: LEARNING RESOURCES
+       ========================================== -->
+  <section class="section" id="resources">
+    <div class="section-header reveal">
+      <div class="section-tag">Module 02</div>
+      <h2 class="section-title">学习资源与参考</h2>
+      <p class="section-desc">国内外优质资源汇总，从设计灵感到技术实现，一站式学习路径。</p>
+    </div>
+
+    <!-- Domestic Resources -->
+    <div class="resource-group reveal">
+      <div class="resource-group-title">
+        <span style="font-size: 18px;">🇨</span> 国内资源
+      </div>
+      <div class="resource-list">
+        <a class="resource-item" href="https://m.zcool.com.cn/article/ZMTI3NzUxMg==.html" target="_blank">
+          <div class="resource-icon"></div>
+          <div>
+            <div class="resource-name">站酷 ZCOOL — 可视化设计十要素</div>
+            <div class="resource-desc">系统讲解数据可视化设计的风格、配色、布局等核心要素</div>
+            <div class="resource-url">zcool.com.cn</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://www.finereport.com/blog/article/68771701d2527e0eb74b0ab3" target="_blank">
+          <div class="resource-icon">📊</div>
+          <div>
+            <div class="resource-name">FineReport — 如何设计未来感大屏界面</div>
+            <div class="resource-desc">2025 年大屏设计趋势预测，包含大量实战案例</div>
+            <div class="resource-url">finereport.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://gallery.echartsjs.com/" target="_blank">
+          <div class="resource-icon">📈</div>
+          <div>
+            <div class="resource-name">ECharts Gallery — 数据可视化案例库</div>
+            <div class="resource-desc">Apache ECharts 官方示例库，数百种图表可直接复用</div>
+            <div class="resource-url">gallery.echartsjs.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://antv.antgroup.com/" target="_blank">
+          <div class="resource-icon">🔬</div>
+          <div>
+            <div class="resource-name">AntV — 蚂蚁数据可视化解决方案</div>
+            <div class="resource-desc">G2、G6、L7 等可视化引擎，企业级图表最佳实践</div>
+            <div class="resource-url">antv.antgroup.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://blog.csdn.net/2401_87844866/article/details/160990610" target="_blank">
+          <div class="resource-icon">💻</div>
+          <div>
+            <div class="resource-name">CSDN — 可视化大屏动效全方案盘点</div>
+            <div class="resource-desc">GSAP、ECharts、CSS 动效实现方式与适用场景对比</div>
+            <div class="resource-url">blog.csdn.net</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://www.bilibili.com" target="_blank">
+          <div class="resource-icon"></div>
+          <div>
+            <div class="resource-name">B站 — 搜索「数据可视化大屏」「科技感 UI」</div>
+            <div class="resource-desc">大量 UP 主分享大屏制作教程，从设计到代码全流程</div>
+            <div class="resource-url">bilibili.com</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- International Resources -->
+    <div class="resource-group reveal">
+      <div class="resource-group-title">
+        <span style="font-size: 18px;"></span> 国际资源
+      </div>
+      <div class="resource-list">
+        <a class="resource-item" href="https://dribbble.com/search/dashboard-micro-interactions" target="_blank">
+          <div class="resource-icon">🏀</div>
+          <div>
+            <div class="resource-name">Dribbble — Dashboard Micro-Interactions</div>
+            <div class="resource-desc">全球设计师的仪表盘微动效作品集，灵感首选</div>
+            <div class="resource-url">dribbble.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://www.awwwards.com/" target="_blank">
+          <div class="resource-icon">🏆</div>
+          <div>
+            <div class="resource-name">Awwwards — 年度最佳网页设计</div>
+            <div class="resource-desc">全球顶级网页设计评选，动效与交互设计标杆</div>
+            <div class="resource-url">awwwards.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://codepen.io/" target="_blank">
+          <div class="resource-icon">️</div>
+          <div>
+            <div class="resource-name">CodePen — HTML/CSS/JS 动效代码分享</div>
+            <div class="resource-desc">搜索 "tech dashboard"、"cyberpunk UI" 获取可直接运行的代码</div>
+            <div class="resource-url">codepen.io</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://observablehq.com/" target="_blank">
+          <div class="resource-icon">🔭</div>
+          <div>
+            <div class="resource-name">Observable — D3.js 交互式可视化</div>
+            <div class="resource-desc">D3.js 创始人维护的平台，顶级数据可视化笔记本</div>
+            <div class="resource-url">observablehq.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://gsap.com/" target="_blank">
+          <div class="resource-icon">⚡</div>
+          <div>
+            <div class="resource-name">GSAP — 专业级 Web 动画引擎</div>
+            <div class="resource-desc">业界最强大的 JS 动画库，Showcase 页面满是灵感</div>
+            <div class="resource-url">gsap.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://www.figma.com/resource-library/web-design-trends/" target="_blank">
+          <div class="resource-icon"></div>
+          <div>
+            <div class="resource-name">Figma — 2026 Web Design Trends</div>
+            <div class="resource-desc">Figma 官方发布的年度网页设计趋势报告</div>
+            <div class="resource-url">figma.com</div>
+          </div>
+        </a>
+        <a class="resource-item" href="https://smallppt.com/blog/design-inspiration/presentation-design-trends" target="_blank">
+          <div class="resource-icon">📑</div>
+          <div>
+            <div class="resource-name">Smallppt — 2026 Presentation Design Trends</div>
+            <div class="resource-desc">9 大演示文稿设计趋势，包含科技感风格专项分析</div>
+            <div class="resource-url">smallppt.com</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Design Trends -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">2026 设计趋势速览</h3>
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="card-title">AI 生成式设计</div>
+          <div class="card-text">AI 辅助生成布局、配色和动效方案，设计师从执行者变为策展人</div>
+        </div>
+        <div class="card">
+          <div class="card-title">3D 与空间计算</div>
+          <div class="card-text">WebGL/Three.js 让 3D 元素成为汇报文档的标配，增强沉浸感</div>
+        </div>
+        <div class="card">
+          <div class="card-title">微交互精细化</div>
+          <div class="card-text">从"有没有动效"到"动效是否精准传达信息"，克制成为新美学</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       MODULE 3: METHODOLOGY
+       ========================================== -->
+  <section class="section" id="methods">
+    <div class="section-header reveal">
+      <div class="section-tag">Module 03</div>
+      <h2 class="section-title">汇报内容组织方法论</h2>
+      <p class="section-desc">六大经典框架，从结构化思维到故事化表达，让你的汇报逻辑清晰、说服有力。</p>
+    </div>
+
+    <!-- Framework Overview Table -->
+    <div class="reveal">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>框架</th>
+            <th>核心思想</th>
+            <th>最佳场景</th>
+            <th>难度</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>金字塔原理</strong></td>
+            <td>结论先行，以上统下</td>
+            <td>所有正式汇报</td>
+            <td><span class="tag tag-green">入门</span></td>
+          </tr>
+          <tr>
+            <td><strong>SCQA 模型</strong></td>
+            <td>情境→冲突→问题→答案</td>
+            <td>项目/问题驱动型汇报</td>
+            <td><span class="tag tag-green">入门</span></td>
+          </tr>
+          <tr>
+            <td><strong>STAR 法则</strong></td>
+            <td>情境→任务→行动→结果</td>
+            <td>绩效/案例汇报</td>
+            <td><span class="tag tag-green">入门</span></td>
+          </tr>
+          <tr>
+            <td><strong>AIDA 模型</strong></td>
+            <td>注意→兴趣→欲望→行动</td>
+            <td>产品发布/战略说服</td>
+            <td><span class="tag tag-blue">中级</span></td>
+          </tr>
+          <tr>
+            <td><strong>4P 叙事法</strong></td>
+            <td>图片→承诺→证明→推动</td>
+            <td>商业提案/融资路演</td>
+            <td><span class="tag tag-blue">中级</span></td>
+          </tr>
+          <tr>
+            <td><strong>黄金圈法则</strong></td>
+            <td>Why→How→What</td>
+            <td>愿景型/团队激励</td>
+            <td><span class="tag tag-orange">进阶</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Detailed Framework Cards -->
+    <div class="card-grid card-grid-2 reveal">
+
+      <!-- Pyramid Principle -->
+      <div class="method-card">
+        <div class="method-name">金字塔原理</div>
+        <div class="method-name-en">Minto Pyramid Principle · 芭芭拉·明托</div>
+        <div class="method-core">
+          结论先行 → 以上统下 → 归类分组 → 逻辑递进
+        </div>
+        <div class="method-steps">
+          <span class="method-step">核心结论</span>
+          <span class="method-step">支撑论点 A</span>
+          <span class="method-step">支撑论点 B</span>
+          <span class="method-step">支撑论点 C</span>
+          <span class="method-step">论据/数据</span>
+        </div>
+        <div class="method-scenario">
+          <strong>适用场景：</strong>向高管汇报、项目评审、任何需要快速传达核心观点的场合。<br>
+          <strong>一句话口诀：</strong>"先说答案，再说理由，最后给证据。"
+        </div>
+      </div>
+
+      <!-- SCQA -->
+      <div class="method-card">
+        <div class="method-name">SCQA 模型</div>
+        <div class="method-name-en">Situation - Complication - Question - Answer</div>
+        <div class="method-core">
+          情境(S) → 冲突(C) → 问题(Q) → 答案(A)
+        </div>
+        <div class="method-steps">
+          <span class="method-step">背景现状</span>
+          <span class="method-step">遇到的问题</span>
+          <span class="method-step">核心疑问</span>
+          <span class="method-step">解决方案</span>
+        </div>
+        <div class="method-scenario">
+          <strong>适用场景：</strong>项目复盘、问题驱动型汇报、需要引起共鸣的开场。<br>
+          <strong>一句话口诀：</strong>"本来挺好，但是出了事，怎么办？我的方案是..."
+        </div>
+      </div>
+
+      <!-- STAR -->
+      <div class="method-card">
+        <div class="method-name">STAR 法则</div>
+        <div class="method-name-en">Situation - Task - Action - Result</div>
+        <div class="method-core">
+          情境(S) → 任务(T) → 行动(A) → 结果(R)
+        </div>
+        <div class="method-steps">
+          <span class="method-step">背景</span>
+          <span class="method-step">目标</span>
+          <span class="method-step">做了什么</span>
+          <span class="method-step">取得了什么</span>
+        </div>
+        <div class="method-scenario">
+          <strong>适用场景：</strong>个人/团队绩效汇报、案例分享、面试述职。<br>
+          <strong>一句话口诀：</strong>"当时什么情况，我要做什么，我做了什么，结果怎样。"
+        </div>
+      </div>
+
+      <!-- AIDA -->
+      <div class="method-card">
+        <div class="method-name">AIDA 模型</div>
+        <div class="method-name-en">Attention - Interest - Desire - Action</div>
+        <div class="method-core">
+          注意(A) → 兴趣(I) → 欲望(D) → 行动(A)
+        </div>
+        <div class="method-steps">
+          <span class="method-step">抓住眼球</span>
+          <span class="method-step">引发兴趣</span>
+          <span class="method-step">激发渴望</span>
+          <span class="method-step">促成行动</span>
+        </div>
+        <div class="method-scenario">
+          <strong>适用场景：</strong>产品发布、战略说服、需要推动决策的汇报。<br>
+          <strong>一句话口诀：</strong>"你看这个！→ 是不是很有意思？→ 你也需要！→ 现在就做！"
+        </div>
+      </div>
+
+      <!-- 4P -->
+      <div class="method-card">
+        <div class="method-name">4P 叙事法</div>
+        <div class="method-name-en">Picture - Promise - Proof - Push</div>
+        <div class="method-core">
+          图片(P) → 承诺(P) → 证明(P) → 推动(P)
+        </div>
+        <div class="method-steps">
+          <span class="method-step">描绘愿景</span>
+          <span class="method-step">做出承诺</span>
+          <span class="method-step">给出证据</span>
+          <span class="method-step">推动决策</span>
+        </div>
+        <div class="method-scenario">
+          <strong>适用场景：</strong>商业提案、融资路演、需要获取资源支持的汇报。<br>
+          <strong>一句话口诀：</strong>"想象一下...→ 我保证能...→ 证据在这里...→ 请批准/投资。"
+        </div>
+      </div>
+
+      <!-- Golden Circle -->
+      <div class="method-card">
+        <div class="method-name">黄金圈法则</div>
+        <div class="method-name-en">Golden Circle · Simon Sinek · Why-How-What</div>
+        <div class="method-core">
+          Why（为什么）→ How（怎么做）→ What（做什么）
+        </div>
+        <div class="method-steps">
+          <span class="method-step">信念/使命</span>
+          <span class="method-step">方法/路径</span>
+          <span class="method-step">产品/成果</span>
+        </div>
+        <div class="method-scenario">
+          <strong>适用场景：</strong>愿景型汇报、团队激励、品牌故事、年度战略发布。<br>
+          <strong>一句话口诀：</strong>"我们相信...→ 所以我们...→ 最终做出了..."
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Decision Tree -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">框架选择决策树</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+        不确定用哪个框架？按以下路径快速判断：
+      </p>
+      <div class="decision-tree">
+        <div class="tree-level">
+          <span style="font-size: 14px; color: var(--text-muted); margin-right: 8px;">你的汇报目的是？</span>
+        </div>
+        <div class="tree-level" style="padding-left: 24px;">
+          <span class="tree-node">传达结论/决策</span>
+          <span class="tree-arrow">→</span>
+          <span class="tree-node result">金字塔原理</span>
+        </div>
+        <div class="tree-level" style="padding-left: 24px;">
+          <span class="tree-node">讲述一个项目/案例</span>
+          <span class="tree-arrow">→</span>
+          <span class="tree-node result">STAR 法则</span>
+        </div>
+        <div class="tree-level" style="padding-left: 24px;">
+          <span class="tree-node">提出并解决问题</span>
+          <span class="tree-arrow">→</span>
+          <span class="tree-node result">SCQA 模型</span>
+        </div>
+        <div class="tree-level" style="padding-left: 24px;">
+          <span class="tree-node">说服对方采取行动</span>
+          <span class="tree-arrow">→</span>
+          <span class="tree-node result">AIDA 模型</span>
+        </div>
+        <div class="tree-level" style="padding-left: 24px;">
+          <span class="tree-node">获取资源/投资</span>
+          <span class="tree-arrow">→</span>
+          <span class="tree-node result">4P 叙事法</span>
+        </div>
+        <div class="tree-level" style="padding-left: 24px;">
+          <span class="tree-node">传递愿景/激励团队</span>
+          <span class="tree-arrow">→</span>
+          <span class="tree-node result">黄金圈法则</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Practical Example -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">实战案例：用 SCQA 组织一次产品汇报</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-item-title">S · 情境（Situation）</div>
+          <div class="timeline-item-text">"过去一年，我们的用户增长率保持在 30%，产品日活突破 100 万，市场反馈积极。"</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-item-title">C · 冲突（Complication）</div>
+          <div class="timeline-item-text">"但竞品 X 在上季度发布了类似功能，用户留存率下降了 5%，获客成本上升了 20%。"</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-item-title">Q · 问题（Question）</div>
+          <div class="timeline-item-text">"我们如何在保持增长的同时，建立差异化竞争优势？"</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-item-title">A · 答案（Answer）</div>
+          <div class="timeline-item-text">"我们的三步战略：1) 深耕垂直场景 2) 构建数据壁垒 3) 拓展生态合作。以下是详细路线图..."</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       MODULE 4: ANIMATION DESIGN
+       ========================================== -->
+  <section class="section" id="animation">
+    <div class="section-header reveal">
+      <div class="section-tag">Module 04</div>
+      <h2 class="section-title">动效设计原则</h2>
+      <p class="section-desc">克制且有效的微动效设计——让动效服务于信息，而非炫技。</p>
+    </div>
+
+    <!-- Core Principles -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">五大核心原则</h3>
+      <div class="card-grid card-grid-5" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon blue">1</div>
+          <div class="card-title">服务于信息</div>
+          <div class="card-text">动效引导视线、强调重点，不喧宾夺主</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon orange">2</div>
+          <div class="card-title">时间控制</div>
+          <div class="card-text">微动效 ≤ 300ms，过渡动画 ≤ 800ms</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon green">3</div>
+          <div class="card-title">缓动函数</div>
+          <div class="card-text">ease-in-out 为主，避免线性或过度弹跳</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon purple">4</div>
+          <div class="card-title">一致性</div>
+          <div class="card-text">统一动效语言，同类元素用同类动效</div>
+        </div>
+        <div class="card" style="padding: 20px;">
+          <div class="card-icon blue">5</div>
+          <div class="card-title">可访问性</div>
+          <div class="card-text">支持 prefers-reduced-motion 媒体查询</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Animation Demos -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">动效类型演示</h3>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+        以下是四种最常用的科技感微动效，当前页面正在实时演示：
+      </p>
+      <div class="anim-demo">
+        <div class="anim-demo-title">LIVE DEMO · 实时动效展示</div>
+        <div class="anim-row">
+          <div class="anim-box anim-breathe">呼吸<br>光晕</div>
+          <div class="anim-box anim-float">悬浮<br>上浮</div>
+          <div class="anim-box anim-glow">脉冲<br>发光</div>
+          <div class="anim-box anim-rotate">缓慢<br>旋转</div>
+        </div>
+        <div class="progress-demo">
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">数据进度条填充</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="--fill: 72%"></div>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="--fill: 89%"></div>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="--fill: 45%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Scene-based Recommendations -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">按场景推荐动效</h3>
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <div class="card-title">路线图 / 时间轴</div>
+          <div class="card-text" style="margin-top: 8px;">
+            <span class="tag tag-blue">渐进描边</span>
+            <span class="tag tag-blue">节点依次点亮</span>
+            <span class="tag tag-blue">连接线流动</span>
+          </div>
+          <div class="card-text" style="margin-top: 12px;">
+            时间轴从左到右逐步绘制，每个里程碑节点在滚动到视口时点亮，连接线用渐变流动效果。
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">框架图 / 架构图</div>
+          <div class="card-text" style="margin-top: 8px;">
+            <span class="tag tag-orange">分层渐入</span>
+            <span class="tag tag-orange">呼吸光晕</span>
+            <span class="tag tag-orange">悬浮卡片</span>
+          </div>
+          <div class="card-text" style="margin-top: 12px;">
+            架构层级从底到顶依次浮现，每层卡片带呼吸光晕，hover 时轻微上浮展示详情。
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">数据图表</div>
+          <div class="card-text" style="margin-top: 8px;">
+            <span class="tag tag-green">数值滚动</span>
+            <span class="tag tag-green">进度条填充</span>
+            <span class="tag tag-green">平滑绘制</span>
+          </div>
+          <div class="card-text" style="margin-top: 12px;">
+            数字从 0 滚动到目标值（1.5s），柱状图从底部生长，折线图从左到右绘制。
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">背景装饰</div>
+          <div class="card-text" style="margin-top: 8px;">
+            <span class="tag tag-purple">粒子漂移</span>
+            <span class="tag tag-purple">渐变流动</span>
+            <span class="tag tag-purple">网格呼吸</span>
+          </div>
+          <div class="card-text" style="margin-top: 12px;">
+            低透明度粒子缓慢飘浮，背景网格线微弱呼吸，整体保持极低存在感。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CSS Code Example -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">提示词中的动效描述示例</h3>
+      <div class="prompt-block">
+        <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+        <div class="prompt-label">在提示词中这样描述动效</div>
+        <div class="prompt-text"><span class="hl-muted">/* 你可以直接在提示词中加入以下描述 */</span>
+
+<span class="hl-blue">"页面加载动效："</span>
+- 各模块从下方渐入，stagger 间隔 0.1s
+- 使用 CSS @keyframes fadeInUp 实现
+- 缓动函数：cubic-bezier(0.16, 1, 0.3, 1)
+
+<span class="hl-blue">"数字滚动效果："</span>
+- 使用 JS 实现 count-up 动画
+- 从 0 到目标值，duration 1500ms
+- 使用 requestAnimationFrame 保证流畅
+
+<span class="hl-blue">"卡片交互效果："</span>
+- hover 时 translateY(-2px) + box-shadow 加深
+- transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1)
+- 不要使用 transform: scale()，避免视觉跳动
+
+<span class="hl-blue">"背景粒子效果："</span>
+- 使用纯 CSS 实现，不需要 Canvas
+- 20-30 个粒子，随机位置和速度
+- 透明度 0.1-0.3，不干扰内容阅读
+
+<span class="hl-orange">"克制原则："</span>
+- 同一时间页面上活跃动效不超过 3 个
+- 所有动效 duration 不超过 800ms
+- 支持 @media (prefers-reduced-motion: reduce) 关闭动效</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       MODULE 5: SKILL
+       ========================================== -->
+  <section class="section" id="skill">
+    <div class="section-header reveal">
+      <div class="section-tag">Module 05</div>
+      <h2 class="section-title">Skill · 一键生成科技感汇报</h2>
+      <p class="section-desc">将以上所有方法论沉淀为 QoderWork Skill，一句话即可调用。</p>
+    </div>
+
+    <div class="skill-block reveal">
+      <div class="skill-name">tech-presentation-html</div>
+      <div class="skill-desc">
+        基于金字塔原理/SCQA/STAR 等方法论，自动生成包含路线图、框架图、数据图表和克制动效的科技感 HTML 汇报文档。
+      </div>
+      <div style="margin-bottom: 24px;">
+        <span class="tag tag-blue">提示词模板</span>
+        <span class="tag tag-orange">方法论框架</span>
+        <span class="tag tag-green">动效规范</span>
+        <span class="tag tag-purple">多风格支持</span>
+      </div>
+      <div class="skill-trigger" onclick="alert('Skill 已创建完成！在 QoderWork 中输入技能名称即可调用。')">
+        ⚡ 安装 Skill
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Skill Usage -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">使用方式</h3>
+      <div class="prompt-block">
+        <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+        <div class="prompt-label">调用示例</div>
+        <div class="prompt-text"><span class="hl-blue">// 最简调用</span>
+帮我用 tech-presentation-html 技能，生成一个 Q3 产品战略汇报
+
+<span class="hl-blue">// 带详细参数</span>
+使用 tech-presentation-html 技能，生成汇报文档：
+- 主题：2026 年度技术架构演进规划
+- 受众：CTO 和技术委员会
+- 风格：深色赛博朋克
+- 框架：金字塔原理
+- 包含：架构图、技术路线图、性能对比图表
+- 动效：克制微动效
+
+<span class="hl-blue">// 指定方法论</span>
+用 SCQA 框架 + tech-presentation-html 技能，
+生成一个关于「系统迁移方案」的项目汇报，
+包含现状分析、迁移风险、实施路线图和预期收益。</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Skill Features -->
+    <div class="reveal">
+      <h3 style="font-size: 18px; margin-bottom: 20px;">Skill 内置能力</h3>
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="card-icon blue">📋</div>
+          <div class="card-title">智能框架选择</div>
+          <div class="card-text">根据汇报场景自动推荐最合适的内容组织框架（金字塔/SCQA/STAR 等）</div>
+        </div>
+        <div class="card">
+          <div class="card-icon orange">🎨</div>
+          <div class="card-title">多风格模板</div>
+          <div class="card-text">内置深色赛博朋克、简约科技白、数据仪表盘三种视觉风格</div>
+        </div>
+        <div class="card">
+          <div class="card-icon green"></div>
+          <div class="card-title">克制动效规范</div>
+          <div class="card-text">自动应用经过验证的微动效方案，确保视觉增强而不凌乱</div>
+        </div>
+        <div class="card">
+          <div class="card-icon purple">📊</div>
+          <div class="card-title">图表自动生成</div>
+          <div class="card-text">根据数据自动选择最合适的图表类型（柱状/折线/环形/漏斗）</div>
+        </div>
+        <div class="card">
+          <div class="card-icon blue">📱</div>
+          <div class="card-title">响应式适配</div>
+          <div class="card-text">自动适配桌面端和平板端，确保不同设备上的最佳呈现效果</div>
+        </div>
+        <div class="card">
+          <div class="card-icon orange">♿</div>
+          <div class="card-title">可访问性支持</div>
+          <div class="card-text">内置 prefers-reduced-motion 支持，尊重用户的动效偏好设置</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       FOOTER
+       ========================================== -->
+  <footer class="footer">
+    <div class="footer-text">
+      科技感汇报 HTML 提示词完全指南<br>
+      从提示词到震撼呈现的系统方法论
+    </div>
+    <div class="footer-links">
+      <a class="footer-link" href="#hero">回到顶部</a>
+      <a class="footer-link" href="#prompt">提示词工程</a>
+      <a class="footer-link" href="#resources">学习资源</a>
+      <a class="footer-link" href="#methods">方法论</a>
+      <a class="footer-link" href="#animation">动效设计</a>
+      <a class="footer-link" href="#skill">Skill</a>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ==========================================
+     JAVASCRIPT
+     ========================================== -->
+<script>
+// ---- Particle Background ----
+(function() {
+  const container = document.getElementById('particles');
+  const count = 25;
+  for (let i = 0; i < count; i++) {
+    const span = document.createElement('span');
+    span.style.left = Math.random() * 100 + '%';
+    span.style.animationDuration = (8 + Math.random() * 12) + 's';
+    span.style.animationDelay = Math.random() * 10 + 's';
+    span.style.width = span.style.height = (1 + Math.random() * 2) + 'px';
+    container.appendChild(span);
+  }
+})();
+
+// ---- Scroll Reveal (Intersection Observer) ----
+(function() {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => observer.observe(el));
+})();
+
+// ---- Counter Animation ----
+(function() {
+  const counters = document.querySelectorAll('[data-count]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.count);
+        const duration = 1500;
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(eased * target);
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => observer.observe(el));
+})();
+
+// ---- Progress Bar Animation ----
+(function() {
+  const bars = document.querySelectorAll('.progress-bar-fill');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animated');
+      }
+    });
+  }, { threshold: 0.5 });
+  bars.forEach(el => observer.observe(el));
+})();
+
+// ---- Navigation Active State ----
+(function() {
+  const links = document.querySelectorAll('.nav-link');
+  const sections = ['hero', 'prompt', 'resources', 'methods', 'animation', 'skill'];
+
+  links.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = link.dataset.target;
+      const el = document.getElementById(target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[data-target="${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+})();
+
+// ---- Copy Prompt ----
+function copyPrompt(btn) {
+  const block = btn.closest('.prompt-block');
+  const text = block.querySelector('.prompt-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '已复制 ✓';
+    btn.style.color = 'var(--accent-green)';
+    btn.style.borderColor = 'var(--accent-green)';
+    setTimeout(() => {
+      btn.textContent = '复制';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
